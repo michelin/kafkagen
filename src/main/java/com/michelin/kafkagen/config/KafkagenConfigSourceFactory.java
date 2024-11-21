@@ -25,7 +25,7 @@ public class KafkagenConfigSourceFactory implements ConfigSourceFactory {
 
             return Collections.singletonList(yamlConfigSource);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return Collections.emptyList();
         }
     }
 
