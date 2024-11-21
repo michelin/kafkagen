@@ -1,0 +1,95 @@
+{
+  "type": "record",
+  "name": "options_test_record",
+  "fields": [
+    {
+      "name": "array_field",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "enum_field",
+      "type": {
+        "type": "enum",
+        "name": "enum_test",
+        "symbols": [
+          "HELLO",
+          "HI_THERE",
+          "GREETINGS",
+          "SALUTATIONS",
+          "GOODBYE"
+        ]
+      }
+    },
+    {
+      "name": "fixed_field",
+      "type": {
+        "type": "fixed",
+        "name": "fixed_test",
+        "size": 2
+      }
+    },
+    {
+      "name": "map_field",
+      "type": {
+        "type": "map",
+        "values": "int"
+      }
+    },
+    {
+      "name": "map_key_field",
+      "type": {
+        "type": "map",
+        "values": {
+          "type": "int"
+        }
+      }
+    },
+    {
+      "name": "record_field",
+      "type": {
+        "type": "record",
+        "name": "record_test",
+        "fields": [
+          {
+            "name": "month",
+            "type": "string"
+          },
+          {
+            "name": "day",
+            "type": "int"
+          }
+        ]
+      }
+    },
+    {
+      "name": "union_field",
+      "type": [
+        "null",
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "int"
+        },
+        {
+          "type": "long"
+        },
+        {
+          "type": "float"
+        },
+        {
+          "type": "double"
+        },
+        {
+          "type": "bytes"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+import "ProtobufValue";
+
+message ProtobufReference {
+  string fieldString = 1;
+  ProtobufValue protobufValue = 2;
+}

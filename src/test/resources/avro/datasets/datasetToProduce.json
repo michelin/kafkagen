@@ -1,0 +1,144 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "timestamp": 709123200000,
+  "key" : "key1",
+  "value" : {
+    "fieldString" : "value1",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "timestamp": 709491600000,
+  "key" : "key2",
+  "value" : {
+    "fieldString" : "value2",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "key3",
+  "value" : {
+    "fieldString" : "value3",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "timestamp": 1718865689000,
+  "key" : "key4",
+  "value" : {
+    "fieldString" : "value4",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" :"key5",
+  "value" : {
+    "fieldString" : "value5",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" :"key6",
+  "value" : {
+    "fieldString" : "value6",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" :"key7",
+  "value" : {
+    "fieldString" : "value7",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+}]

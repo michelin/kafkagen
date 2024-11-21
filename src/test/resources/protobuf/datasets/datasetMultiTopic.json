@@ -1,0 +1,44 @@
+[ {
+  "topic": "protobufTopicWithKey",
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : {
+    "keyFieldString" : "key1",
+    "keyFieldInt32" : 42
+  },
+  "value" : {
+    "fieldString" : "value1",
+    "fieldInt32" : 42,
+    "fieldInt64" : 42,
+    "fieldDouble" : 42.1,
+    "fieldFloat" : 42.1,
+    "fieldBool" : true,
+    "fieldMessage" : {
+      "fieldMessageString" : "String_value",
+      "fieldMessageInt32" : 42
+    },
+    "fieldArray" : [ "String_value", "String_value" ]
+  }
+},{
+  "topic": "protobufTopicWithoutKey",
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "key2",
+  "value" : {
+    "fieldString" : "value2",
+    "fieldInt32" : 42,
+    "fieldInt64" : 42,
+    "fieldDouble" : 42.1,
+    "fieldFloat" : 42.1,
+    "fieldBool" : true,
+    "fieldMessage" : {
+      "fieldMessageString" : "String_value",
+      "fieldMessageInt32" : 42
+    },
+    "fieldArray" : [ "String_value", "String_value" ]
+  }
+} ]

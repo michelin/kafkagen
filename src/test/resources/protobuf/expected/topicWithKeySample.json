@@ -1,0 +1,23 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : {
+    "keyFieldString" : "String_value",
+    "keyFieldInt32" : 42
+  },
+  "value" : {
+    "fieldString" : "String_value",
+    "fieldInt32" : 42,
+    "fieldInt64" : 42,
+    "fieldDouble" : 42.1,
+    "fieldFloat" : 42.1,
+    "fieldBool" : true,
+    "fieldMessage" : {
+      "fieldMessageString" : "String_value",
+      "fieldMessageInt32" : 42
+    },
+    "fieldArray" : [ "String_value", "String_value" ]
+  }
+} ]

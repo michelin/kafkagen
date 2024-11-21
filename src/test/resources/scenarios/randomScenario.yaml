@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+metadata:
+  description: random generation
+spec:
+  topic: options
+  avroFile: ../avro/random/options.json
+  iterations: 10
+

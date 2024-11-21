@@ -1,0 +1,15 @@
+{
+  "name": "AvroReference",
+  "namespace": "com.michelin.avro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "fieldString",
+      "type": "string"
+    },
+    {
+      "name": "avroValue",
+      "type": "AvroValue"
+    }
+  ]
+}

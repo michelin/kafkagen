@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+metadata:
+  description: kafkagen-topic JSON template
+spec:
+  topic: avroTopicWithoutKey
+  datasetFile: ../avro/datasets/datasetToProduce.json

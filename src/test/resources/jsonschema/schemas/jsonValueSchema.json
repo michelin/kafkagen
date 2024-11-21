@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/jsonKeySchema.json",
+  "title": "JsonValue",
+  "description": "A JSONSchema value",
+  "type": "object",
+  "properties": {
+    "fieldString": {
+      "type": "string"
+    },
+    "fieldInt": {
+      "type": "integer"
+    },
+    "fieldBool": {
+      "type": "boolean"
+    },
+    "fieldNumber": {
+      "type": "number"
+    },
+    "fieldArray": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fieldObject": {
+      "type": "object",
+      "properties": {
+        "fieldObjectString": {
+          "type": "string"
+        },
+        "fieldObjectInt": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

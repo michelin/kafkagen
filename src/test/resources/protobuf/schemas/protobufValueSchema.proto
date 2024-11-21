@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message ProtobufValue {
+  string fieldString = 1;
+  int32 fieldInt32 = 2;
+  int64 fieldInt64 = 3;
+  double fieldDouble = 4;
+  float fieldFloat = 5;
+  bool fieldBool = 6;
+
+  message FieldMessage {
+    string fieldMessageString = 1;
+    int32 fieldMessageInt32 = 2;
+  }
+  FieldMessage fieldMessage = 7;
+
+  repeated string fieldArray = 8;
+}

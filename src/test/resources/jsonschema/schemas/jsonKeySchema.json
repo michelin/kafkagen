@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/jsonKeySchema.json",
+  "title": "JsonKey",
+  "description": "A JSONSchema key",
+  "type": "object",
+  "properties": {
+    "keyFieldString": {
+      "type": "string"
+    },
+    "keyFieldInt": {
+      "type": "integer"
+    }
+  }
+}

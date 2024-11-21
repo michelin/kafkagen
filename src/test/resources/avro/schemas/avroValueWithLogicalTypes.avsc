@@ -1,0 +1,105 @@
+{
+  "name": "DateTime",
+  "namespace": "com.michelin.avro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "timeMillis",
+      "type": {
+          "type": "int",
+          "logicalType": "time-millis"
+      }
+    },
+    {
+      "name": "timeMicros",
+      "type": {
+        "type": "long",
+        "logicalType": "time-micros"
+      }
+    },
+    {
+        "name": "timestampMillis",
+        "type": {
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        }
+    },
+    {
+        "name": "timestampMicros",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros"
+      }
+    },
+    {
+        "name": "date",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      }
+    },
+    {
+      "name": "localTimestampMillis",
+      "type": {
+        "type": "long",
+        "logicalType": "local-timestamp-millis"
+      }
+    },
+    {
+      "name": "fieldUnion",
+      "type": ["null", { "type": "int", "logicalType": "date" }],
+      "default": null
+    },
+    {
+      "name": "fieldRecord",
+      "type":
+      {
+        "type": "record",
+        "name": "FieldRecord",
+        "fields": [
+          {
+              "name": "recordTimestampMillis",
+              "type": {
+                  "type": "long",
+                  "logicalType": "timestamp-millis"
+              }
+          },
+          {
+              "name": "recordFieldUnion",
+              "type": ["null", { "type": "int", "logicalType": "date" }],
+              "default": null
+            }
+        ]
+      }
+    },
+    {
+      "name": "fieldArray",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      }
+    },
+    {
+      "name": "fieldArrayRecord",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "TimestampRecord",
+          "fields": [
+            {
+              "name": "timestampMillis",
+              "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

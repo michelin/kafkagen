@@ -1,0 +1,67 @@
+{
+  "name": "AvroValue",
+  "namespace": "com.michelin.avro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "fieldString",
+      "type": "string"
+    },
+    {
+      "name": "fieldInt",
+      "type": "int"
+    },
+    {
+      "name": "fieldBool",
+      "type": "boolean"
+    },
+    {
+      "name": "fieldLong",
+      "type": "long"
+    },
+    {
+      "name": "fieldFloat",
+      "type": "float"
+    },
+    {
+      "name": "fieldDouble",
+      "type": "float"
+    },
+    {
+      "name": "fieldUnion",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "fieldArray",
+      "type":
+        {
+          "type": "array",
+          "items": "string"
+        }
+    },
+    {
+      "name": "fieldRecord",
+      "type":
+      {
+        "type": "record",
+        "name": "FieldRecord",
+        "fields": [
+          {
+            "name": "fieldRecordString",
+            "type": "string"
+          },
+          {
+            "name": "fieldRecordInt",
+            "type": "int"
+          }
+        ]
+      }
+    },
+    {
+        "name": "newField",
+        "type": ["null", "string"],
+        "default": null
+    }
+  ]
+}

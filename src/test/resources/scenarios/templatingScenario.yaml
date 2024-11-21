@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+metadata:
+  description: kafkagen-topic JSON template
+spec:
+  topic: avroTopicWithoutKey
+  templateFile: ../avro/datasets/templateDataset.json
+  variables:
+    key1:
+      fieldString: value1
+    key2:
+      fieldString: value2
+    key3:
+      fieldString: value3
+    key4:
+      fieldString: value4
+

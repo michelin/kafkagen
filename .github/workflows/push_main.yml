@@ -1,0 +1,109 @@
+name: Push Main
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-jar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Check style
+        run: ./mvnw checkstyle:check
+
+      - name: Build
+        id: build_jar
+        run: ./mvnw package
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafkagen-jar
+          path: ${{ github.workspace }}/target/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: 'graalvm'
+          java-version: '21'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Build
+        id: build_native
+        run: |
+          ./mvnw package -Pnative
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafkagen-linux
+          path: ${{ github.workspace }}/target/kafkagen-*-native-image-source-jar/kafkagen-*-runner
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: 'graalvm'
+          java-version: '21'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Build
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          .\mvnw package -Pnative
+        shell: cmd
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafkagen-windows
+          path: ${{ github.workspace }}/target/kafkagen-*.exe

@@ -1,0 +1,45 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "",
+  "value" : {
+    "fieldString" : "",
+    "fieldInt" : 1,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : {
+      "string" : "String_value"
+    },
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+},{
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "",
+  "value" : {
+    "fieldString" : "",
+    "fieldInt" : 2,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : {
+      "string" : "String_value"
+    },
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+} ]

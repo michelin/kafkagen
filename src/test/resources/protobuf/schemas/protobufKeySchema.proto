@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message ProtobufKey {
+  string keyFieldString = 1;
+  int32 keyFieldInt32 = 2;
+}

@@ -1,0 +1,10 @@
+[ {
+  "value" : {
+    "timeMillis" : "11:12:01.1",
+    "timeMicros" : "11:12:01.123456",
+    "timestampMillis" : "2007-12-03T10:15:30.100Z",
+    "timestampMicros" : "2007-12-03T10:15:30.123456Z",
+    "date" : "2007-12-03",
+    "localTimestampMillis" :  "2007-12-03T10:15:30.123"
+  }
+} ]

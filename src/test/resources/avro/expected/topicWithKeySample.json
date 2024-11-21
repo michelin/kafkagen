@@ -1,0 +1,26 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : {
+    "keyFieldString" : "String_value",
+    "keyFieldInt" : 42
+  },
+  "value" : {
+    "fieldString" : "String_value",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : {
+      "string" : "String_value"
+    },
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+} ]

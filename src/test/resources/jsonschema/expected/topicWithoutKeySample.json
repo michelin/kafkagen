@@ -1,0 +1,18 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "String_value",
+  "value" : {
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldArray" : [ "String_value", "String_value" ],
+    "fieldNumber" : 42.1,
+    "fieldObject" : {
+      "fieldObjectInt" : 42,
+      "fieldObjectString" : "String_value"
+    },
+    "fieldString" : "String_value"
+  }
+} ]

@@ -1,0 +1,40 @@
+[ {
+  "topic": "noSchemaTopic",
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : {
+    "keyFieldString" : "key1",
+    "keyFieldInt" : 42
+  },
+  "value" : {
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldArray" : [ "String_value", "String_value" ],
+    "fieldNumber" : 42.1,
+    "fieldObject" : {
+      "fieldObjectInt" : 42,
+      "fieldObjectString" : "String_value"
+    },
+    "fieldString" : "value1"
+  }
+}, {
+  "topic": "noSchemaTopic2",
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "key" : "key2",
+  "value" : {
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldArray" : [ "String_value", "String_value" ],
+    "fieldNumber" : 42.1,
+    "fieldObject" : {
+      "fieldObjectInt" : 42,
+      "fieldObjectString" : "String_value"
+    },
+    "fieldString" : "value2"
+  }
+} ]

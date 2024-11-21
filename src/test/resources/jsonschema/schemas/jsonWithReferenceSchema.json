@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/jsonKeySchema.json",
+  "title": "JsonValue",
+  "description": "A JSONSchema value",
+  "type": "object",
+  "properties": {
+    "fieldString": {
+      "type": "string"
+    },
+    "fieldReference": {
+      "$ref": "JsonValue"
+    }
+  }
+}
