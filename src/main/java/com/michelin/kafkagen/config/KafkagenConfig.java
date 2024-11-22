@@ -1,12 +1,14 @@
 package com.michelin.kafkagen.config;
 
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 import java.util.List;
 import java.util.Optional;
 
 @ConfigMapping(prefix = "kafkagen")
 public interface KafkagenConfig {
+    @WithDefault("no-context")
     String currentContext();
 
     List<Context> contexts();
