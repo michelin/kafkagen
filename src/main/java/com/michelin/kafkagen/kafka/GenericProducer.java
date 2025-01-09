@@ -3,11 +3,17 @@ package com.michelin.kafkagen.kafka;
 import com.michelin.kafkagen.config.KafkagenConfig;
 import com.michelin.kafkagen.models.Dataset;
 import com.michelin.kafkagen.models.Record;
+import com.michelin.kafkagen.services.ConfigService;
+import com.michelin.kafkagen.services.SchemaService;
+import com.michelin.kafkagen.utils.InsecureSslEngineFactory;
+import com.michelin.kafkagen.utils.SSLUtils;
 import io.confluent.avro.random.generator.Generator;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +27,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -28,7 +35,16 @@ import org.apache.kafka.common.serialization.StringSerializer;
 @ApplicationScoped
 public class GenericProducer {
 
+    private final SchemaService schemaService;
+    ConfigService configService;
+
     private final Random random = new Random();
+
+    @Inject
+    public GenericProducer(ConfigService configService, SchemaService schemaService) {
+        this.configService = configService;
+        this.schemaService = schemaService;
+    }
 
     /**
      * Produce records from a list of datasets (e.g. records for different topics)
@@ -167,10 +183,27 @@ public class GenericProducer {
             settings.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, partitionerClass);
         });
 
-        final var producer = new KafkaProducer<>(settings);
+        // Setup the custom truststore location if given to the producer and the schema registry client
+        settings.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, configService.kafkagenConfig.truststoreLocation()
+            .orElse(""));
+        settings.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+            configService.kafkagenConfig.truststoreLocation().orElse(""));
 
-        Runtime.getRuntime().addShutdownHook(new Thread(producer::close));
+        if (configService.kafkagenConfig.insecureSsl().isPresent()
+            && configService.kafkagenConfig.insecureSsl().get()) {
+            // Disable SSL for the Kafka cluster connection
+            settings.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, InsecureSslEngineFactory.class);
+        }
 
-        return producer;
+        final var kafkaProducer = new KafkaProducer<>(settings);
+
+        if (configService.kafkagenConfig.insecureSsl().isPresent()
+            && configService.kafkagenConfig.insecureSsl().get()) {
+            SSLUtils.turnKafkaClientInsecure(kafkaProducer, schemaService.getSchemaRegistryClient());
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(kafkaProducer::close));
+
+        return kafkaProducer;
     }
 }

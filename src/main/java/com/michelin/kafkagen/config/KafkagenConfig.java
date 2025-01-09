@@ -11,6 +11,10 @@ public interface KafkagenConfig {
     @WithDefault("no-context")
     String currentContext();
 
+    Optional<Boolean> insecureSsl();
+
+    Optional<String> truststoreLocation();
+
     List<Context> contexts();
 
     interface Context {

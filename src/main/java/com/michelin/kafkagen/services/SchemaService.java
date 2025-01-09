@@ -1,12 +1,15 @@
 package com.michelin.kafkagen.services;
 
 import com.michelin.kafkagen.config.KafkagenConfig;
+import com.michelin.kafkagen.utils.SSLUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
@@ -14,15 +17,23 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.config.SslConfigs;
 
 @Slf4j
 @Singleton
 public class SchemaService {
 
+    ConfigService configService;
+
     private final Map<String, ParsedSchema> cachedSchemas = new HashMap<>();
 
     @Getter
     private SchemaRegistryClient schemaRegistryClient;
+
+    @Inject
+    public SchemaService(ConfigService configService) {
+        this.configService = configService;
+    }
 
     /**
      * Get the latest schema from the registry for a subject.
@@ -60,11 +71,23 @@ public class SchemaService {
         if (schemaRegistryClient == null) {
             Map<String, String> props = new HashMap<>();
             if (registryUsername.isPresent() && registryPassword.isPresent()) {
-                props = Map.of("basic.auth.credentials.source", "USER_INFO",
-                    "basic.auth.user.info", String.format("%s:%s", registryUsername.get(), registryPassword.get()));
+                props.put("basic.auth.credentials.source", "USER_INFO");
+                props.put("basic.auth.user.info",
+                    String.format("%s:%s", registryUsername.get(), registryPassword.get()));
             }
+
+            // Setup the custom truststore location if given
+            props.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+                configService.kafkagenConfig.truststoreLocation().orElse(""));
+
             schemaRegistryClient = new CachedSchemaRegistryClient(registryUrl, 20,
                 List.of(new AvroSchemaProvider(), new JsonSchemaProvider(), new ProtobufSchemaProvider()), props);
+
+            if (configService.kafkagenConfig.insecureSsl().isPresent()
+                && configService.kafkagenConfig.insecureSsl().get()) {
+                // Disable SSL for the Kafka cluster connection
+                SSLUtils.turnSchemaRegistryClientInsecure(schemaRegistryClient);
+            }
         }
 
         try {

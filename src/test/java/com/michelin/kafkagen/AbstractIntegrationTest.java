@@ -63,6 +63,16 @@ public abstract class AbstractIntegrationTest {
         }
 
         @Override
+        public Optional<String> truststoreLocation() {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Boolean> insecureSsl() {
+            return Optional.empty();
+        }
+
+        @Override
         public List<Context> contexts() {
             return null;
         }

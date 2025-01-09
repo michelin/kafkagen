@@ -2,9 +2,13 @@ package com.michelin.kafkagen.kafka;
 
 import com.michelin.kafkagen.config.KafkagenConfig;
 import com.michelin.kafkagen.models.Record;
+import com.michelin.kafkagen.services.ConfigService;
 import com.michelin.kafkagen.services.SchemaService;
+import com.michelin.kafkagen.utils.InsecureSslEngineFactory;
+import com.michelin.kafkagen.utils.SSLUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
@@ -27,6 +31,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -34,6 +39,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 @Slf4j
 @ApplicationScoped
 public class GenericConsumer {
+
+    private final ConfigService configService;
 
     private final SchemaService schemaService;
 
@@ -43,8 +50,9 @@ public class GenericConsumer {
     private Deserializer<?> valueDeserializer;
 
     @Inject
-    public GenericConsumer(SchemaService schemaService) {
+    public GenericConsumer(ConfigService configService, SchemaService schemaService) {
         this.schemaService = schemaService;
+        this.configService = configService;
     }
 
     /**
@@ -168,7 +176,24 @@ public class GenericConsumer {
 
         settings.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 15000);
 
+        // Setup the custom truststore location if given to the consumer and the schema registry client
+        settings.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, configService.kafkagenConfig.truststoreLocation()
+            .orElse(""));
+        settings.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+            configService.kafkagenConfig.truststoreLocation().orElse(""));
+
+        if (configService.kafkagenConfig.insecureSsl().isPresent()
+            && configService.kafkagenConfig.insecureSsl().get()) {
+            // Disable SSL for the Kafka cluster connection
+            settings.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, InsecureSslEngineFactory.class);
+        }
+
         kafkaConsumer = new KafkaConsumer<>(settings);
+
+        if (configService.kafkagenConfig.insecureSsl().isPresent()
+            && configService.kafkagenConfig.insecureSsl().get()) {
+            SSLUtils.turnKafkaClientInsecure(kafkaConsumer, schemaService.getSchemaRegistryClient());
+        }
 
         ParsedSchema keySchema = schemaService.getLatestSchema(topic + "-key", context);
         ParsedSchema valueSchema = schemaService.getLatestSchema(topic + "-value", context);
