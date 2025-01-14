@@ -82,7 +82,7 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
 
         Thread.sleep(1000);
 
-        var datasetSubcommand = new DatasetSubcommand(schemaService, configService, datasetService);
+        var datasetSubcommand = new DatasetSubcommand(configService, schemaService, datasetService);
         initCommandLine(datasetSubcommand);
         datasetSubcommand.commandSpec = commandSpec;
         datasetSubcommand.topic = "avroTopicWithoutKey";
@@ -112,7 +112,7 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
         Mockito.when(configService.getCurrentContextName()).thenReturn(null);
         Mockito.when(configService.getContextByName(Mockito.anyString())).thenReturn(Optional.empty());
 
-        var datasetSubcommand = new DatasetSubcommand(schemaService, configService, datasetService);
+        var datasetSubcommand = new DatasetSubcommand(configService, schemaService, datasetService);
         initCommandLine(datasetSubcommand);
         datasetSubcommand.commandSpec = commandSpec;
 

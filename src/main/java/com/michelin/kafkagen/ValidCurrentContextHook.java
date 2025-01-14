@@ -8,6 +8,9 @@ import java.util.logging.LogManager;
 import org.jboss.logmanager.Level;
 import picocli.CommandLine;
 
+/**
+ * Abstract class to check if a context is selected before executing a command.
+ */
 public abstract class ValidCurrentContextHook implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-v", "--verbose"}, description = "Show more information about the execution")
@@ -24,7 +27,7 @@ public abstract class ValidCurrentContextHook implements Callable<Integer> {
         this.configService = configService;
     }
 
-    public Integer call() throws Exception {
+    public Integer call() {
         if (verbose) {
             LogManager.getLogManager().getLogger("com.michelin").setLevel(Level.DEBUG);
         }
@@ -41,6 +44,6 @@ public abstract class ValidCurrentContextHook implements Callable<Integer> {
         return callSubCommand();
     }
 
-    protected abstract Integer callSubCommand() throws Exception;
+    protected abstract Integer callSubCommand();
 
 }

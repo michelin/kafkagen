@@ -66,7 +66,7 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKey", 3, (short) 1)));
 
-        var produceSubcommand = new ProduceSubcommand(genericProducer, datasetService, configService);
+        var produceSubcommand = new ProduceSubcommand(configService, genericProducer, datasetService);
         initCommandLine(produceSubcommand);
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.topic = Optional.of("avroTopicWithoutKey");
@@ -91,7 +91,7 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithKey", 3, (short) 1)));
         getAdminClient().createTopics(List.of(new NewTopic("selfReferencedTopic", 3, (short) 1)));
 
-        var produceSubcommand = new ProduceSubcommand(genericProducer, datasetService, configService);
+        var produceSubcommand = new ProduceSubcommand(configService, genericProducer, datasetService);
         initCommandLine(produceSubcommand);
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("avro/datasets/datasetMultiTopic.json").toURI()));
@@ -107,7 +107,7 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
         Mockito.when(configService.getCurrentContextName()).thenReturn(null);
         Mockito.when(configService.getContextByName(Mockito.anyString())).thenReturn(Optional.empty());
 
-        var produceSubcommand = new ProduceSubcommand(genericProducer, datasetService, configService);
+        var produceSubcommand = new ProduceSubcommand(configService, genericProducer, datasetService);
         initCommandLine(produceSubcommand);
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.file = Optional.empty();
@@ -119,7 +119,7 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithoutFile() {
-        var produceSubcommand = new ProduceSubcommand(genericProducer, datasetService, configService);
+        var produceSubcommand = new ProduceSubcommand(configService, genericProducer, datasetService);
         initCommandLine(produceSubcommand);
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.file = Optional.empty();
@@ -130,7 +130,7 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithWrongFile() {
-        var produceSubcommand = new ProduceSubcommand(genericProducer, datasetService, configService);
+        var produceSubcommand = new ProduceSubcommand(configService, genericProducer, datasetService);
         initCommandLine(produceSubcommand);
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.file = Optional.of(new File("wrongFile.json"));

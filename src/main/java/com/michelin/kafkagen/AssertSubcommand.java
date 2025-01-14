@@ -10,10 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.logging.LogManager;
 import java.util.stream.Collectors;
-import org.jboss.logmanager.Level;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "assert",
@@ -26,7 +23,7 @@ import picocli.CommandLine;
     commandListHeading = "%n@|bold Commands|@:%n",
     usageHelpAutoWidth = true,
     mixinStandardHelpOptions = true)
-public class AssertSubcommand implements Callable<Integer> {
+public class AssertSubcommand extends ValidCurrentContextHook {
 
     @CommandLine.Parameters(description = "Name of the topic", arity = "0..1")
     public Optional<String> topic;
@@ -45,38 +42,18 @@ public class AssertSubcommand implements Callable<Integer> {
         "--timestamp"}, description = "Timestamp milliseconds to start asserting from", arity = "0..1")
     public Optional<Long> startTimestamp;
 
-    @CommandLine.Option(names = {"-v", "--verbose"}, description = "Show more information about the execution")
-    public boolean verbose;
-
-    @CommandLine.Spec
-    public CommandLine.Model.CommandSpec commandSpec;
-
     public DatasetService datasetService;
-    public ConfigService configService;
     public AssertService assertService;
 
     @Inject
-    public AssertSubcommand(DatasetService datasetService, ConfigService configService, AssertService assertService) {
+    public AssertSubcommand(ConfigService configService, DatasetService datasetService, AssertService assertService) {
+        super(configService);
         this.datasetService = datasetService;
-        this.configService = configService;
         this.assertService = assertService;
     }
 
     @Override
-    public Integer call() {
-        if (verbose) {
-            LogManager.getLogManager().getLogger("com.michelin").setLevel(Level.DEBUG);
-        }
-
-        var currentContextName = configService.getCurrentContextName();
-        var currentContext = configService.getContextByName(currentContextName);
-
-        if (currentContext.isEmpty()) {
-            commandSpec.commandLine().getErr()
-                .println("No context selected. Please list/set the context with the config command");
-            return CommandLine.ExitCode.USAGE;
-        }
-
+    public Integer callSubCommand() {
         if (file.isEmpty()) {
             throw new CommandLine.ParameterException(commandSpec.commandLine(),
                 "No dataset given. Try --help to see the command usage");

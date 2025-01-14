@@ -74,7 +74,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
         Thread.sleep(1000);
 
-        var assertSubcommand = new AssertSubcommand(datasetService, configService, assertService);
+        var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
         assertSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("avro/expected/assertDataset.json").toURI()));
@@ -95,7 +95,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
         Mockito.when(configService.getCurrentContextName()).thenReturn(null);
         Mockito.when(configService.getContextByName(Mockito.anyString())).thenReturn(Optional.empty());
 
-        var assertSubcommand = new AssertSubcommand(datasetService, configService, assertService);
+        var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
         assertSubcommand.file = Optional.empty();
@@ -106,7 +106,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithoutFile() {
-        var assertSubcommand = new AssertSubcommand(datasetService, configService, assertService);
+        var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
         assertSubcommand.file = Optional.empty();
@@ -116,7 +116,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithWrongFile() {
-        var assertSubcommand = new AssertSubcommand(datasetService, configService, assertService);
+        var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
         assertSubcommand.file = Optional.of(new File("wrongFile.yaml"));
@@ -128,7 +128,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithoutTopic() {
-        var assertSubcommand = new AssertSubcommand(datasetService, configService, assertService);
+        var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
         assertSubcommand.topic = Optional.empty();

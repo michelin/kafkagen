@@ -8,9 +8,6 @@ import jakarta.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.logging.LogManager;
-import org.jboss.logmanager.Level;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "produce",
@@ -23,7 +20,7 @@ import picocli.CommandLine;
     commandListHeading = "%n@|bold Commands|@:%n",
     usageHelpAutoWidth = true,
     mixinStandardHelpOptions = true)
-public class ProduceSubcommand implements Callable<Integer> {
+public class ProduceSubcommand extends ValidCurrentContextHook {
 
     @CommandLine.Parameters(description = "Name of the topic", arity = "0..1")
     public Optional<String> topic;
@@ -32,39 +29,19 @@ public class ProduceSubcommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-f", "--file"}, description = "YAML/JSON File containing the dataset to insert")
     public Optional<File> file;
 
-    @CommandLine.Option(names = {"-v", "--verbose"}, description = "Show more information about the execution")
-    public boolean verbose;
-
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec commandSpec;
-
     public GenericProducer genericProducer;
     public DatasetService datasetService;
-    public ConfigService configService;
 
     @Inject
-    public ProduceSubcommand(GenericProducer genericProducer, DatasetService datasetService,
-                             ConfigService configService) {
+    public ProduceSubcommand(ConfigService configService, GenericProducer genericProducer,
+                             DatasetService datasetService) {
+        super(configService);
         this.genericProducer = genericProducer;
         this.datasetService = datasetService;
-        this.configService = configService;
     }
 
     @Override
-    public Integer call() {
-        if (verbose) {
-            LogManager.getLogManager().getLogger("com.michelin").setLevel(Level.DEBUG);
-        }
-
-        var currentContextName = configService.getCurrentContextName();
-        var currentContext = configService.getContextByName(currentContextName);
-
-        if (currentContext.isEmpty()) {
-            commandSpec.commandLine().getErr().println("No context selected. Please list/set the context with the "
-                + "config command");
-            return CommandLine.ExitCode.USAGE;
-        }
-
+    public Integer callSubCommand() {
         if (file.isEmpty()) {
             throw new CommandLine.ParameterException(commandSpec.commandLine(), "No dataset given. Try --help to see "
                 + "the command usage");

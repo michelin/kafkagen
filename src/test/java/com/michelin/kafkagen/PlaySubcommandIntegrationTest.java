@@ -69,7 +69,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKey", 3, (short) 1)));
 
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("scenarios/singleDatasetScenario.yaml").toURI()));
@@ -92,7 +92,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithKey", 3, (short) 1)));
 
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("scenarios/multipleDatasetsScenario.yaml").toURI()));
@@ -110,7 +110,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKey", 3, (short) 1)));
 
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("scenarios/templatingScenario.yaml").toURI()));
@@ -127,7 +127,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         createSubjects("options-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("options", 3, (short) 1)));
 
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("scenarios/randomScenario.yaml").toURI()));
@@ -141,7 +141,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         Mockito.when(configService.getCurrentContextName()).thenReturn(null);
         Mockito.when(configService.getContextByName(Mockito.anyString())).thenReturn(Optional.empty());
 
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.empty();
@@ -152,7 +152,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithoutFile() {
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.empty();
@@ -162,7 +162,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void callWithWrongFile() {
-        var playSubcommand = new PlaySubcommand(fileService, genericProducer, datasetService, configService);
+        var playSubcommand = new PlaySubcommand(configService, fileService, genericProducer, datasetService);
         initCommandLine(playSubcommand);
         playSubcommand.commandSpec = commandSpec;
         playSubcommand.file = Optional.of(new File("wrongFile.yaml"));

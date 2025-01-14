@@ -46,7 +46,7 @@ public class SampleSubcommand extends ValidCurrentContextHook {
     public SampleService sampleService;
 
     @Inject
-    public SampleSubcommand(SchemaService schemaService, ConfigService configService, DatasetService datasetService,
+    public SampleSubcommand(ConfigService configService, SchemaService schemaService, DatasetService datasetService,
                             SampleService sampleService) {
         super(configService);
         this.schemaService = schemaService;
@@ -56,24 +56,24 @@ public class SampleSubcommand extends ValidCurrentContextHook {
     }
 
     @Override
-    public Integer callSubCommand() throws Exception {
+    public Integer callSubCommand() {
         StringWriter out = new StringWriter();
         GeneratorBase generator = IOUtils.getGenerator(format, out);
 
         try {
             sampleService.generateSample(topic, currentContext.get(), generator, pretty, withDoc);
+
+            if (file.isPresent() && !out.toString().isEmpty()) {
+                IOUtils.writeOutToFile(file.get(), out);
+            }
+
+            commandSpec.commandLine().getOut().println(out);
+
+            generator.close();
         } catch (Exception e) {
             commandSpec.commandLine().getErr().println("Sample failed due to the following error: " + e.getMessage());
             return CommandLine.ExitCode.SOFTWARE;
         }
-
-        if (file.isPresent() && !out.toString().isEmpty()) {
-            IOUtils.writeOutToFile(file.get(), out);
-        }
-
-        commandSpec.commandLine().getOut().println(out);
-
-        generator.close();
 
         return CommandLine.ExitCode.OK;
     }

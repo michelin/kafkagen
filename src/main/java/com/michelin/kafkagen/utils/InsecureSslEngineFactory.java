@@ -13,6 +13,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.kafka.common.security.auth.SslEngineFactory;
 
+/**
+ * InsecureSslEngineFactory is a Kafka SslEngineFactory that creates SSL engines that trust all certificates.
+ */
 public class InsecureSslEngineFactory implements SslEngineFactory {
 
     public static final TrustManager insecureTrustManager = new X509TrustManager() {

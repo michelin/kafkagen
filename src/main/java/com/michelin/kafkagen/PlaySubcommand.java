@@ -12,9 +12,6 @@ import jakarta.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.logging.LogManager;
-import org.jboss.logmanager.Level;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "play",
@@ -27,49 +24,27 @@ import picocli.CommandLine;
     commandListHeading = "%n@|bold Commands|@:%n",
     usageHelpAutoWidth = true,
     mixinStandardHelpOptions = true)
-public class PlaySubcommand implements Callable<Integer> {
+public class PlaySubcommand extends ValidCurrentContextHook {
+
     // YAML file or directory containing YAML resources to apply
     @CommandLine.Option(names = {"-f", "--file"}, description = "YAML File or Directory containing YAML resources")
     public Optional<File> file;
 
-    @CommandLine.Option(names = {"-v", "--verbose"}, description = "Show more information about the execution")
-    public boolean verbose;
-
-    /**
-     * Current command.
-     */
-    @CommandLine.Spec
-    public CommandLine.Model.CommandSpec commandSpec;
-
     public FileService fileService;
     public GenericProducer genericProducer;
     public DatasetService datasetService;
-    public ConfigService configService;
 
     @Inject
-    public PlaySubcommand(FileService fileService, GenericProducer genericProducer, DatasetService datasetService,
-                          ConfigService configService) {
+    public PlaySubcommand(ConfigService configService, FileService fileService, GenericProducer genericProducer,
+                          DatasetService datasetService) {
+        super(configService);
         this.fileService = fileService;
         this.genericProducer = genericProducer;
         this.datasetService = datasetService;
-        this.configService = configService;
     }
 
     @Override
-    public Integer call() {
-        if (verbose) {
-            LogManager.getLogManager().getLogger("com.michelin").setLevel(Level.DEBUG);
-        }
-
-        var currentContextName = configService.getCurrentContextName();
-        var currentContext = configService.getContextByName(currentContextName);
-
-        if (currentContext.isEmpty()) {
-            commandSpec.commandLine().getErr().println("No context selected. Please list/set the context with the "
-                + "config command");
-            return CommandLine.ExitCode.USAGE;
-        }
-
+    public Integer callSubCommand() {
         if (file.isEmpty()) {
             throw new CommandLine.ParameterException(commandSpec.commandLine(), "No scenario given. Try --help to see "
                 + "the command usage");

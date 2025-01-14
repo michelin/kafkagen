@@ -12,10 +12,18 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility class to turn off SSL for Kafka clients and schema registry.
+ */
 @Slf4j
 @RegisterForReflection(targets = {CachedSchemaRegistryClient.class})
 public class SSLUtils {
 
+    /**
+     * Turn off SSL for the schema registry client.
+     *
+     * @param schemaRegistryClient The schema registry client
+     */
     public static void turnSchemaRegistryClientInsecure(SchemaRegistryClient schemaRegistryClient) {
         // Disable SSL for the Kafka cluster connection
         try {
@@ -40,31 +48,47 @@ public class SSLUtils {
             RestService value = (RestService) field.get(schemaRegistryClient);
             value.setSslSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Error turning schema registry client insecure", e);
         }
     }
 
+    /**
+     * Turn off SSL for the Kafka client.
+     *
+     * @param kafkaClient The Kafka client
+     * @param insecureSchemaRegistryClient The insecure schema registry client
+     */
     public static void turnKafkaClientInsecure(Object kafkaClient, SchemaRegistryClient insecureSchemaRegistryClient) {
         try {
             setInsecureRegistryClientToKafkaClient(kafkaClient.getClass().getDeclaredField("keySerializer"),
                 kafkaClient, insecureSchemaRegistryClient);
             setInsecureRegistryClientToKafkaClient(kafkaClient.getClass().getDeclaredField("valueSerializer"),
                 kafkaClient, insecureSchemaRegistryClient);
-        } catch (Exception e) {
-
+        } catch (NoSuchFieldException e) {
+            log.error("Error turning Kafka client insecure", e);
         }
     }
 
-    private static void setInsecureRegistryClientToKafkaClient(Field serDeField, Object kafkaClient, SchemaRegistryClient insecureSchemaRegistryClient)
-        throws NoSuchFieldException, IllegalAccessException {
+    /**
+     * Set the insecure schema registry client to the Kafka client.
+     *
+     * @param serDeField The serializer/deserializer field
+     * @param kafkaClient The Kafka client
+     * @param insecureSchemaRegistryClient The insecure schema registry client
+     */
+    private static void setInsecureRegistryClientToKafkaClient(Field serDeField, Object kafkaClient,
+                                                               SchemaRegistryClient insecureSchemaRegistryClient) {
+        try {
+            serDeField.setAccessible(true);
+            Object keySerializerObject = serDeField.get(kafkaClient);
 
-        serDeField.setAccessible(true);
-        Object keySerializerObject = serDeField.get(kafkaClient);
-
-        if (keySerializerObject instanceof AbstractKafkaSchemaSerDe) {
-            Field valueRegistryClientFiel = AbstractKafkaSchemaSerDe.class.getDeclaredField("schemaRegistry");
-            valueRegistryClientFiel.setAccessible(true);
-            valueRegistryClientFiel.set(keySerializerObject, insecureSchemaRegistryClient);
+            if (keySerializerObject instanceof AbstractKafkaSchemaSerDe) {
+                Field valueRegistryClientFiel = AbstractKafkaSchemaSerDe.class.getDeclaredField("schemaRegistry");
+                valueRegistryClientFiel.setAccessible(true);
+                valueRegistryClientFiel.set(keySerializerObject, insecureSchemaRegistryClient);
+            }
+        } catch (Exception e) {
+            log.error("Error setting insecure schema registry client to Kafka client", e);
         }
     }
 }
