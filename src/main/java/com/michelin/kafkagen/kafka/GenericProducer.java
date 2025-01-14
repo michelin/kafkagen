@@ -12,6 +12,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.FileInputStream;
@@ -28,10 +29,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.security.ssl.SslFactory;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 @Slf4j
+@RegisterForReflection(targets = {KafkaProducer.class, SslFactory.class, InsecureSslEngineFactory.class})
 @ApplicationScoped
 public class GenericProducer {
 
@@ -183,11 +186,13 @@ public class GenericProducer {
             settings.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, partitionerClass);
         });
 
-        // Setup the custom truststore location if given to the producer and the schema registry client
-        settings.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, configService.kafkagenConfig.truststoreLocation()
-            .orElse(""));
-        settings.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-            configService.kafkagenConfig.truststoreLocation().orElse(""));
+        if (configService.kafkagenConfig.truststoreLocation().isPresent()) {
+            // Setup the custom truststore location if given to the producer and the schema registry client
+            settings.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+                configService.kafkagenConfig.truststoreLocation().get());
+            settings.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+                configService.kafkagenConfig.truststoreLocation().get());
+        }
 
         if (configService.kafkagenConfig.insecureSsl().isPresent()
             && configService.kafkagenConfig.insecureSsl().get()) {

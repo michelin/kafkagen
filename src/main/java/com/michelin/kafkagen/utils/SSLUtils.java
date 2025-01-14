@@ -1,14 +1,19 @@
 package com.michelin.kafkagen.utils;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.RestService;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.lang.reflect.Field;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@RegisterForReflection(targets = {CachedSchemaRegistryClient.class})
 public class SSLUtils {
 
     public static void turnSchemaRegistryClientInsecure(SchemaRegistryClient schemaRegistryClient) {
