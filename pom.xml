@@ -14,7 +14,7 @@
     <quarkus.platform.version>3.11.1</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
-    <confluent.version>7.5.3</confluent.version>
+    <confluent.version>7.8.0</confluent.version>
     <testcontainers.version>1.19.3</testcontainers.version>
     <sonar-maven-plugin.version>3.11.0.3922</sonar-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
