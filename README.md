@@ -493,3 +493,19 @@ Here is the expected format for the timestamp:
 - timestamp-micros: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'" ("2007-12-03T10:15:30.100123Z", "2007-12-03T10:15:30Z")
 - local-timestamp-millis: "yyyy-MM-dd'T'HH:mm:ss.SSS" ("2007-12-03T10:15:30.100", "2007-12-03T10:15:30")
 - local-timestamp-micros: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS" ("2007-12-03T10:15:30.100123", "2007-12-03T10:15:30")
+
+# SSL configuration
+When working behind a corporate proxy, you may face SSL issues. You can easily check if you face such issue by enabling the -v (--verbose option). You will see such error in the logs: `javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
+
+Kafkagen allows to provide a custom truststore configuration for the Kafka and Schema registry connection.
+
+```yaml
+kafkagen:
+  truststore-location: /path/to/the/custom/truststore/truststore.p12
+```
+
+If you want to totally disable the SSL verification, you can set the following property in the configuration file:
+```yaml
+kafkagen:
+  insecure-ssl: true
+```

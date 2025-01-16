@@ -38,7 +38,7 @@ public abstract class ValidCurrentContextHook implements Callable<Integer> {
         if (currentContext.isEmpty()) {
             commandSpec.commandLine().getErr()
                 .println("No context selected. Please list/set the context with the config command");
-            return CommandLine.ExitCode.SOFTWARE;
+            return CommandLine.ExitCode.USAGE;
         }
 
         return callSubCommand();
