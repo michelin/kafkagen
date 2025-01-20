@@ -15,7 +15,7 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <confluent.version>7.8.0</confluent.version>
-    <testcontainers.version>1.19.3</testcontainers.version>
+    <testcontainers.version>1.20.4</testcontainers.version>
     <sonar-maven-plugin.version>3.11.0.3922</sonar-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
