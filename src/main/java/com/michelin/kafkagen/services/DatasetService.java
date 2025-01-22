@@ -303,7 +303,8 @@ public class DatasetService {
                 // Offset is a list of offsets, consume the partition from the first offset and filter the records
                 kafkaConsumer.seek(topicPartition, offsets.getFirst());
                 polledRecords = genericConsumer.pollConsumerRecords(
-                        new HashMap<>(Map.of(topicPartition, offsets.stream().max(Long::compareTo).get())))
+                        new HashMap<>(Map.of(topicPartition,
+                            offsets.stream().max(Long::compareTo).orElse(offsets.getFirst()))))
                     .stream()
                     .filter(record -> offsets.contains(record.offset()))
                     .toList();

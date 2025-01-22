@@ -16,10 +16,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.FileInputStream;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.stream.LongStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
@@ -41,7 +41,7 @@ public class GenericProducer {
     private final SchemaService schemaService;
     ConfigService configService;
 
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     @Inject
     public GenericProducer(ConfigService configService, SchemaService schemaService) {
