@@ -1,18 +1,40 @@
+<div align="center">
+
 # Kafkagen
 
-Kafkagen is a CLI that aims to ease testing by providing a simple way to create test scenarios and populate topics with records.
-Records can be defined in JSON/YAML format or generated randomly for Avro schema using [avro-random-generator](https://github.com/confluentinc/avro-random-generator)
+[![GitHub Build](https://img.shields.io/github/actions/workflow/status/michelin/kafkagen/push_main.yml?branch=main&logo=github&style=for-the-badge)](https://img.shields.io/github/actions/workflow/status/michelin/kafkagen/push_main.yml)
+[![GitHub release](https://img.shields.io/github/v/release/michelin/kafkagen?logo=github&style=for-the-badge)](https://github.com/michelin/kafkagen/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/michelin/kafkagen?logo=github&style=for-the-badge)](https://github.com/michelin/kafkagen)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache&style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
-Records are automatically serialized according to the schema associated to the topic. Supported serializer are:
-- KafkaAvroSerializer
-- KafkaJsonSchemaSerializer
-- KafkaProtobufSerializer
-- StringSerializer
+Testing your Kafka clients made simple. 
 
-# Table of contents
+Kafkagen is a CLI that provides a simple way to create test scenarios and populate topics with records.
+Records can be defined in JSON/YAML format or generated randomly for Avro.
+Records are automatically serialized according to the schema associated to the topic using KafkaAvroSerializer, KafkaJsonSchemaSerializer, KafkaProtobufSerializer or StringSerializer.
+</div>
 
-# Install
-Download the latest Windows/Linux release
+## Table of Contents
+
+* [Install](#install)
+* [Usage](#usage)
+  * [Sample](#sample)
+  * [Dataset](#dataset)
+  * [Produce](#produce)
+  * [Play](#play)
+  * [Assert](#assert)
+  * [Config](#config)
+* [Docker usage](#docker-usage)
+* [Scenario/datasets definition](#scenario-and-datasets-definition)
+  * [Scenario definition](#scenario-definition)
+  * [Datasets definition](#datasets-definition)
+* [Misc](#misc)
+  * [Avro timestamp](#avro-timestamp)
+  * [SSL configuration](#ssl-configuration)
+* [Contributing](#contribution)
+
+## Install
+Download the latest Windows/Linux/MacOS release
 
 Kafkagen requires some information to be defined globally:
 - Comma-separated list of Kafka broker
@@ -69,9 +91,9 @@ The application can be configured using the following properties:
 
 Please note that only `bootstrap-servers` is mandatory. All the other keys are optional
 
-# Usage
+## Usage
 
-# Sample
+### Sample
 This command allows you to get a sample record of a topic and ease the dataset writing. Output format can be JSON or YAML
 
 ```
@@ -101,7 +123,7 @@ kafkagen sample myTopic -f yaml -s ./sample.yaml
 kafkagen sample myTopic -d -p
 ```
 
-# Dataset
+### Dataset
 This command allows you to get a dataset from an existing topic. Output format can be JSON or YAML
 
 ```
@@ -139,7 +161,7 @@ kafkagen dataset myTopic -o 0=0-10 -s ./sample.json
 kafkagen dataset myTopic -c -o 0 -p -s ./sample.json
 ```
 
-# Produce
+### Produce
 This command allows you to produce records from a JSON/YAML dataset file.
 The topic name can be passed:
 - In the command line if records have to be published in a single topic (see usage below)
@@ -169,7 +191,7 @@ kafkagen produce myTopic -f ./datasets/datasetMyTopic.json
 kafkagen produce myTopic -f ./datasets/datasetMyTopic.yaml
 kafkagen produce -f ./datasets/datasetForMultipleTopics.yaml
 ```
-# Play
+### Play
 
 This command allows you to play a scenario defined in a YAML file. A scenario contains one or several document based on a:
 * Dataset file: produces raw datasets
@@ -195,7 +217,7 @@ Example(s):
 ```console
 kafkagen play -f ./scenarios/scenario1.yaml
 ```
-# Assert
+### Assert
 > **Disclaimer:** 
 > Pretty format needed for the expected dataset. It means that, for instance, union field `{ "name": "field",
 > "type": ["null", "string"], "default": null }` must be declared as 
@@ -232,7 +254,7 @@ Example(s):
 kafkagen assert myTopic -f ./datasets/datasetToFound.json
 ```
 
-# Config
+### Config
 This command allows you to manage your Kafka contexts.
 ```
 Usage: kafkagen config [-hV] <action> <context>
@@ -260,7 +282,7 @@ kafkagen config use-context local
 kafkagen config current-context
 ```
 
-# Docker usage
+## Docker usage
 Kafkagen provides also a Docker image. To run Kafkagen commands:
 - Put the Kafkagen configuration in a variable with the target context
 ```bash
@@ -272,8 +294,8 @@ docker run -e KAFKAGEN_CONFIG="$config" -v ${PWD}/scenarios:/work/scenarios mich
   ./kafkagen play -f ./scenarios/myScenario.yaml
 ```
 
-
-# Scenario definition
+## Scenario and datasets definition
+### Scenario definition
 Scenarios are defined in a yaml file (kubectl-like). Information needed in the scenario definition are:
 - ```topic```: topic to populate
 - ```datasetFile```, ```templateFile``` or ```avroFile```: datasetFile contains raw dataset to insert. templateFile contains template for the records.  avroFile contains the avro schema to use for random records generation
@@ -366,7 +388,7 @@ spec:
   iterations: 100
 ```
 
-# Datasets definition
+### Datasets definition
 Datasets can be defined in JSON or YAML files. A dataset file must contain an array of records.
 A dataset record can:
 
@@ -479,7 +501,9 @@ Examples:
   }
 ]
 ```
-# AVRO timestamp
+
+## Misc
+### AVRO timestamp
 AVRO timestamp (date, time and dateTime) are defined as:
 - int for date and time-millis logical types
 - long for time-micros, timestamp-millis, timestamp-micros, local-timestamp-millis and local-timestamp-micros logical types
@@ -494,7 +518,7 @@ Here is the expected format for the timestamp:
 - local-timestamp-millis: "yyyy-MM-dd'T'HH:mm:ss.SSS" ("2007-12-03T10:15:30.100", "2007-12-03T10:15:30")
 - local-timestamp-micros: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS" ("2007-12-03T10:15:30.100123", "2007-12-03T10:15:30")
 
-# SSL configuration
+### SSL configuration
 When working behind a corporate proxy, you may face SSL issues. You can easily check if you face such issue by enabling the -v (--verbose option). You will see such error in the logs: `javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
 
 Kafkagen allows to provide a custom truststore configuration for the Kafka and Schema registry connection.
@@ -509,3 +533,6 @@ If you want to totally disable the SSL verification, you can set the following p
 kafkagen:
   insecure-ssl: true
 ```
+
+## Contribution
+We welcome contributions from the community! Before you get started, please take a look at our contribution guide to learn about our guidelines and best practices. We appreciate your help in making Kstreamplify a better library for everyone.

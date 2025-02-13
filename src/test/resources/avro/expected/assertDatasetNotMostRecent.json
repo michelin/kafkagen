@@ -1,0 +1,22 @@
+[ {
+  "headers" : {
+    "header1" : "valueHeader1",
+    "header2" : "valueHeader2"
+  },
+  "mostRecent": true,
+  "key" : "key2",
+  "value" : {
+    "fieldString" : "value2",
+    "fieldInt" : 42,
+    "fieldBool" : true,
+    "fieldLong" : 42,
+    "fieldFloat" : 42.1,
+    "fieldDouble" : 42.1,
+    "fieldUnion" : "String_value",
+    "fieldArray" : [ "String_value" ],
+    "fieldRecord" : {
+      "fieldRecordString" : "String_value",
+      "fieldRecordInt" : 42
+    }
+  }
+}]

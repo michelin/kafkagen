@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.michelin.kafka</groupId>
@@ -64,6 +64,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-config-yaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-container-image-docker</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -256,7 +260,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${checkstyle-maven-plugin.version}</version>
         <configuration>
-            <configLocation>checkstyle.xml</configLocation>
+            <configLocation>.checkstyle/checkstyle.xml</configLocation>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>
             <linkXRef>false</linkXRef>
@@ -294,7 +298,7 @@
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>${checkstyle-maven-plugin.version}</version>
             <configuration>
-                <configLocation>checkstyle.xml</configLocation>
+                <configLocation>.checkstyle/checkstyle.xml</configLocation>
             </configuration>
         </plugin>
     </plugins>

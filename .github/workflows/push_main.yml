@@ -68,6 +68,9 @@ jobs:
         run: |
           ./mvnw package -Pnative -DskipTests
 
+      - name: Docker
+        run: ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests
+
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
