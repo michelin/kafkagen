@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src=".readme/logo.svg" alt="kafkagen"/>
+
 # Kafkagen
 
 [![GitHub Build](https://img.shields.io/github/actions/workflow/status/michelin/kafkagen/push_main.yml?branch=main&logo=github&style=for-the-badge)](https://img.shields.io/github/actions/workflow/status/michelin/kafkagen/push_main.yml)
@@ -290,8 +292,7 @@ config=$(<~/.kafkagen/config.yml)
 ```
 - Create a container and give the KAFKAGEN_CONFIG + your scenarios/datasets folder as volume
 ```bash
-docker run -e KAFKAGEN_CONFIG="$config" -v ${PWD}/scenarios:/work/scenarios michelin/kafkagen:0.5.0 \
-  ./kafkagen play -f ./scenarios/myScenario.yaml
+docker run -e KAFKAGEN_CONFIG="$config" -v ${PWD}/scenarios:/work/scenarios michelin/kafkagen:1.0.0 play -f ./scenarios/myScenario.yaml
 ```
 
 ## Scenario and datasets definition

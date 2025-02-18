@@ -37,7 +37,7 @@ jobs:
       - name: Build and test
         id: build_jar
         run: |
-         ./mvnw package
+          ./mvnw package
           echo current_version=$(echo $(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)) >> $GITHUB_OUTPUT
 
       - name: Publish test report
@@ -45,6 +45,17 @@ jobs:
         uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
+
+      - name: Docker
+        run: |
+          LATEST_VERSION=$(git tag -l --sort=-version:refname | head -1 | cut -d 'v' -f 2)
+          if [ "$LATEST_VERSION" == "${{ steps.build_jar.outputs.current_version }}" ]; then 
+            echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_jar.outputs.current_version }}. Pushing latest tag."
+            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=latest
+          else 
+            echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_jar.outputs.current_version }}. Not pushing latest tag."
+            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_jar.outputs.current_version }}
+          fi
 
       - name: Generate release changelog
         uses: mikepenz/release-changelog-builder-action@v5
@@ -114,10 +125,10 @@ jobs:
           LATEST_VERSION=$(git tag -l --sort=-version:refname | head -1 | cut -d 'v' -f 2)
           if [ "$LATEST_VERSION" == "${{ steps.build_native_linux_macos.outputs.current_version }}" ]; then 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_native_linux_macos.outputs.current_version }}. Pushing latest tag."
-            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.tag=latest
+            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=latest-native
           else 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_native_linux_macos.outputs.current_version }}. Not pushing latest tag."
-            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.tag=${{ steps.build_native_linux_macos.outputs.current_version }}
+            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_native_linux_macos.outputs.current_version }}-native
           fi
 
       - name: Generate release changelog
@@ -189,6 +200,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.build_changelog.outputs.changelog }}
           artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-windows-amd64.exe
-          draft: true
+          draft: truedocker i
           prerelease: true
           allowUpdates: true
