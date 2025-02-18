@@ -97,7 +97,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: kafkagen-linux
+          name: kafkactl-${{ matrix.platform }}
           path: ${{ github.workspace }}/target/**/*-runner
 
       - name: Docker
@@ -137,36 +137,3 @@ jobs:
         with:
           name: kafkagen-windows
           path: ${{ github.workspace }}/target/*.exe
-
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          distribution: 'graalvm'
-          java-version: '21'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven
-
-      - name: Build
-        id: build_native
-        run: |
-          ./mvnw package -Pnative -DskipTests
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: kafkagen-macos
-          path: ${{ github.workspace }}/target/**/*-runner
