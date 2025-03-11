@@ -158,7 +158,7 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java-transport-zerodep</artifactId>
-      <version>3.3.3</version>
+      <version>3.4.2</version>
     </dependency>
   </dependencies>
   <build>
