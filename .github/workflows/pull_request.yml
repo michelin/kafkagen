@@ -32,7 +32,7 @@ jobs:
       - name: Check style
         run: ./mvnw checkstyle:check
 
-      - name: Check style
+      - name: Build
         run: ./mvnw package
 
   build-linux:

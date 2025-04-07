@@ -511,10 +511,10 @@ public class DatasetService {
             return Record.builder()
                 .timestamp(rawRecord.getTimestamp())
                 .headers(rawRecord.getHeaders())
-                .key(rawRecord.getKey() instanceof String
+                .key(rawRecord.getKey() == null || rawRecord.getKey() instanceof String
                     ? rawRecord.getKey()
                     : objectMapper.writeValueAsString(rawRecord.getKey()))
-                .value(rawRecord.getValue() instanceof String
+                .value(rawRecord.getValue() == null || rawRecord.getValue() instanceof String
                     ? rawRecord.getValue()
                     : objectMapper.writeValueAsString(rawRecord.getValue()))
                 .build();
