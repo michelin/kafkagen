@@ -34,6 +34,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.PrimitivesArrays;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,8 +117,8 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(19969, ((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldUnion"));
         assertEquals(1725376347100L, ((GenericData.Record)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldRecord")).get("recordTimestampMillis"));
         assertEquals(19969, ((GenericData.Record)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldRecord")).get("recordFieldUnion"));
-        assertEquals(1725376347100L, ((GenericData.Array)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldArray")).get(0));
-        assertEquals(1725376347200L, ((GenericData.Array)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldArray")).get(1));
+        assertEquals(1725376347100L, ((PrimitivesArrays.LongArray)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldArray")).get(0));
+        assertEquals(1725376347200L, ((PrimitivesArrays.LongArray)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldArray")).get(1));
         assertEquals(1725376347100L, ((GenericData.Record)((GenericData.Array)((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldArrayRecord")).get(0)).get("timestampMillis"));
     }
 

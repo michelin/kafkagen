@@ -12,7 +12,7 @@
     <quarkus.package.jar.type>fast-jar</quarkus.package.jar.type>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.11.1</quarkus.platform.version>
+    <quarkus.platform.version>3.19.1</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <confluent.version>7.8.0</confluent.version>
@@ -287,7 +287,7 @@
       </activation>
       <properties>
         <skipITs>false</skipITs>
-        <quarkus.package.type>native</quarkus.package.type>
+        <quarkus.native.enabled>true</quarkus.native.enabled>
         <quarkus.native.additional-build-args>-H:-CheckToolchain</quarkus.native.additional-build-args>
       </properties>
     </profile>

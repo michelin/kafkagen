@@ -366,7 +366,7 @@ public class AvroUtils {
                         prettyPrintDateAndTimeFields((GenericData.Record) item);
                     }
                 });
-            } else {
+            } else if (record.get(key) instanceof GenericData.Record) {
                 prettyPrintDateAndTimeFields((GenericData.Record) record.get(key));
             }
         }));
