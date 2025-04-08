@@ -51,10 +51,10 @@ jobs:
           LATEST_VERSION=$(git tag -l --sort=-version:refname | head -1 | cut -d 'v' -f 2)
           if [ "$LATEST_VERSION" == "${{ steps.build_jar.outputs.current_version }}" ]; then 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_jar.outputs.current_version }}. Pushing latest tag."
-            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=latest
+            ./mvnw package -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_jar.outputs.current_version }} -Dquarkus.container-image.additional-tags=latest
           else 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_jar.outputs.current_version }}. Not pushing latest tag."
-            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_jar.outputs.current_version }}
+            ./mvnw package -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_jar.outputs.current_version }}
           fi
 
       - name: Generate release changelog
@@ -65,12 +65,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Rename file
+        run: mv ${{ github.workspace }}/target/quarkus-app/quarkus-run.jar ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
+
       - name: Update release
         uses: ncipollo/release-action@v1.16.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.build_changelog.outputs.changelog }}
-          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_jar.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_jar.outputs.current_version }}-runner.jar
+          artifacts: ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
           draft: true
           prerelease: true
           allowUpdates: true
@@ -125,7 +128,7 @@ jobs:
           LATEST_VERSION=$(git tag -l --sort=-version:refname | head -1 | cut -d 'v' -f 2)
           if [ "$LATEST_VERSION" == "${{ steps.build_native_linux_macos.outputs.current_version }}" ]; then 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_native_linux_macos.outputs.current_version }}. Pushing latest tag."
-            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=latest-native
+            ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_native_linux_macos.outputs.current_version }}-native -Dquarkus.container-image.additional-tags=latest-native
           else 
             echo "Latest version is $LATEST_VERSION. Current version is ${{ steps.build_native_linux_macos.outputs.current_version }}. Not pushing latest tag."
             ./mvnw package -Dnative -Dquarkus.container-image.build=true -DskipTests -Dquarkus.container-image.push=true -Dquarkus.container-image.tag=${{ steps.build_native_linux_macos.outputs.current_version }}-native

@@ -39,13 +39,18 @@ jobs:
 
       - name: Build
         id: build_jar
-        run: ./mvnw package
+        run: |
+          ./mvnw package
+          echo current_version=$(echo $(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)) >> $GITHUB_OUTPUT
+
+      - name: Rename file
+        run: mv ${{ github.workspace }}/target/quarkus-app/quarkus-run.jar ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: kafkagen-jar
-          path: ${{ github.workspace }}/target/*.jar
+          path: ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
 
       - name: Docker
         run: ./mvnw package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -DskipTests
