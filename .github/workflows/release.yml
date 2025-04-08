@@ -37,7 +37,7 @@ jobs:
       - name: Build and test
         id: build_jar
         run: |
-          ./mvnw package
+          ./mvnw package -Dquarkus.package.jar.type=uber-jar
           echo current_version=$(echo $(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)) >> $GITHUB_OUTPUT
 
       - name: Publish test report
@@ -65,15 +65,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Rename file
-        run: mv ${{ github.workspace }}/target/quarkus-app/quarkus-run.jar ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
-
       - name: Update release
         uses: ncipollo/release-action@v1.16.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.build_changelog.outputs.changelog }}
-          artifacts: ${{ github.workspace }}/target/quarkus-app/kafkagen-${{ steps.build_jar.outputs.current_version }}.jar
+          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_jar.outputs.current_version }}-runner.jar
           draft: true
           prerelease: true
           allowUpdates: true
