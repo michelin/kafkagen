@@ -536,4 +536,4 @@ kafkagen:
 ```
 
 ## Contribution
-We welcome contributions from the community! Before you get started, please take a look at our contribution guide to learn about our guidelines and best practices. We appreciate your help in making Kstreamplify a better library for everyone.
+We welcome contributions from the community! Before you get started, please take a look at our contribution guide to learn about our guidelines and best practices. We appreciate your help in making Kafkagen a better library for everyone.

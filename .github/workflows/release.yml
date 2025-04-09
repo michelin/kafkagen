@@ -140,14 +140,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rename file
-        run: mv ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-runner ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-${{ matrix.platform }}
+        run: mv ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-runner ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-${{ matrix.platform }}
 
       - name: Update release
         uses: ncipollo/release-action@v1.16.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.build_changelog.outputs.changelog }}
-          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-${{ matrix.platform }}
+          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_linux_macos.outputs.current_version }}-${{ matrix.platform }}
           draft: true
           prerelease: true
           allowUpdates: true
@@ -192,14 +192,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rename file
-        run: Rename-Item -Path ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_windows.outputs.current_version }}.exe -NewName kafkagen-${{ steps.build_native_windows.outputs.current_version }}-windows-amd64.exe
+        run: Rename-Item -Path ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-runner.exe -NewName kafkagen-${{ steps.build_native_windows.outputs.current_version }}-windows-amd64.exe
 
       - name: Update release
         uses: ncipollo/release-action@v1.16.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.build_changelog.outputs.changelog }}
-          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-native-image-source-jar/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-windows-amd64.exe
+          artifacts: ${{ github.workspace }}/target/kafkagen-${{ steps.build_native_windows.outputs.current_version }}-windows-amd64.exe
           draft: truedocker i
           prerelease: true
           allowUpdates: true
