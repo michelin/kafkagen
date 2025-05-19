@@ -153,7 +153,7 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java-transport-zerodep</artifactId>
-      <version>3.5.0</version>
+      <version>3.5.1</version>
     </dependency>
   </dependencies>
   <build>
