@@ -21,6 +21,7 @@ package com.michelin.kafkagen;
 
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import java.util.concurrent.Callable;
+import org.eclipse.microprofile.config.ConfigProvider;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -34,12 +35,20 @@ import picocli.CommandLine.Command;
             AssertSubcommand.class,
             ConfigSubcommand.class
         },
-        mixinStandardHelpOptions = true)
+        mixinStandardHelpOptions = true,
+        versionProvider = KafkagenCommand.ManifestVersionProvider.class)
 public class KafkagenCommand implements Callable<Integer> {
 
     public Integer call() {
         var cmd = new CommandLine(new KafkagenCommand());
         cmd.usage(System.out);
         return 0;
+    }
+
+    static class ManifestVersionProvider implements CommandLine.IVersionProvider {
+
+        public String[] getVersion() throws Exception {
+            return new String[] { ConfigProvider.getConfig().getValue("quarkus.application.version", String.class) };
+        }
     }
 }
