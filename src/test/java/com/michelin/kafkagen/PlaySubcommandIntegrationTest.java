@@ -152,7 +152,7 @@ public class PlaySubcommandIntegrationTest extends AbstractIntegrationTest {
         playSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("scenarios/randomScenario.yaml").toURI()));
 
         assertEquals(CommandLine.ExitCode.OK, playSubcommand.call());
-        assertEquals("Produced 10 random records from avro schema (../avro/random/options.json) in options", out.toString().trim());
+        assertEquals("Produced 10 random records from avro schema (../avro/random/options.avsc) in options", out.toString().trim());
     }
 
     @Test

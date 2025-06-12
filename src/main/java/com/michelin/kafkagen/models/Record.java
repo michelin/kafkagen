@@ -51,6 +51,10 @@ public class Record {
     @Builder.Default
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean mostRecent = false;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer keySubjectVersion;
     private Object key;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer valueSubjectVersion;
     private Object value;
 }

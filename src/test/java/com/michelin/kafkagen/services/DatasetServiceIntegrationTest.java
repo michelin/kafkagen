@@ -81,7 +81,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithKey-key", new AvroSchema(new Schema.Parser().parse(keyStringSchema)));
         createSubjects("avroTopicWithKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
 
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(2, dataset.getRecords().size());
@@ -103,7 +103,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
 
         createSubjects("datasetWithPrettyDateAndTime-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
 
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetWithPrettyDateAndTime.json").toURI()), "datasetWithPrettyDateAndTime", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetWithPrettyDateAndTime.json").toURI()), "datasetWithPrettyDateAndTime", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(1, dataset.getRecords().size());
@@ -132,7 +132,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         createSubjects("jsonTopicWithKey-key", new JsonSchema(keyStringSchema));
         createSubjects("jsonTopicWithKey-value", new JsonSchema(valueStringSchema));
 
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("jsonschema/datasets/dataset.json").toURI()), "jsonTopicWithKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("jsonschema/datasets/dataset.json").toURI()), "jsonTopicWithKey", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(2, dataset.getRecords().size());
@@ -152,7 +152,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         createSubjects("protobufTopicWithKey-key", new ProtobufSchema(keyStringSchema));
         createSubjects("protobufTopicWithKey-value", new ProtobufSchema(valueStringSchema));
 
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("protobuf/datasets/dataset.json").toURI()), "protobufTopicWithKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("protobuf/datasets/dataset.json").toURI()), "protobufTopicWithKey", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(2, dataset.getRecords().size());
@@ -168,7 +168,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void getDatasetForFileWithoutSchema() throws Exception {
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("noSchemas/datasets/dataset.json").toURI()), "noSchemaTopic", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("noSchemas/datasets/dataset.json").toURI()), "noSchemaTopic", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(2, dataset.getRecords().size());
@@ -302,14 +302,14 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
 
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
 
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToEnrich.json").toURI()), "avroTopicWithoutKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToEnrich.json").toURI()), "avroTopicWithoutKey", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(1, dataset.getRecords().size());
         assertEquals(GenericData.Record.class, dataset.getRecords().getFirst().getValue().getClass());
         assertEquals("String_value", ((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldUnion").toString());
 
-        dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToEnrichWithoutNullField.json").toURI()), "avroTopicWithoutKey", context);
+        dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToEnrichWithoutNullField.json").toURI()), "avroTopicWithoutKey", Optional.empty(), Optional.empty(), context);
 
         assertNotNull(dataset);
         assertEquals(1, dataset.getRecords().size());
@@ -383,7 +383,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
 
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKey", 3, (short) 1)));
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToProduce.json").toURI()), "avroTopicWithoutKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToProduce.json").toURI()), "avroTopicWithoutKey", Optional.empty(), Optional.empty(), context);
 
         Thread.sleep(1000);
 
@@ -424,7 +424,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
 
         createSubjects("avroTopicWithoutKeyForKeySearch-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKeyForKeySearch", 3, (short) 1)));
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForKeySearch.json").toURI()), "avroTopicWithoutKeyForKeySearch", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForKeySearch.json").toURI()), "avroTopicWithoutKeyForKeySearch", Optional.empty(), Optional.empty(), context);
 
         Thread.sleep(1000);
 
@@ -454,7 +454,7 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         createSubjects("avroTopicWithKey-key", new AvroSchema(new Schema.Parser().parse(keyStringSchema)));
         createSubjects("avroTopicWithKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithKey", 3, (short) 1)));
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForAvroKeySearch.json").toURI()), "avroTopicWithKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForAvroKeySearch.json").toURI()), "avroTopicWithKey", Optional.empty(), Optional.empty(), context);
 
         Thread.sleep(1000);
 

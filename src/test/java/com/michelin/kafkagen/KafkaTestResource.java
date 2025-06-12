@@ -29,7 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.Map;
 
 public class KafkaTestResource implements QuarkusTestResourceLifecycleManager {
-    public static final String CONFLUENT_VERSION = "7.5.2";
+    public static final String CONFLUENT_VERSION = "7.9.0";
 
     public static KafkaContainer kafka;
     public static GenericContainer registry;

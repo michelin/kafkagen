@@ -51,14 +51,12 @@ public class SampleService {
 
         // Get key/value schema from registry to Avro serialization
         try {
-            keySchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-key",
-                context.definition().registryUsername(), context.definition().registryPassword());
+            keySchema = schemaService.getLatestSchema(topic + "-key", context);
         } catch (Exception e) {
             log.trace("No key schema found for subject <{}>, continuing with String serialization", topic + "-key");
         }
         try {
-            valueSchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-value",
-                context.definition().registryUsername(), context.definition().registryPassword());
+            valueSchema = schemaService.getLatestSchema(topic + "-value", context);
         } catch (Exception e) {
             log.trace("No schema found for the given topic");
         }

@@ -6,7 +6,26 @@
       "name": "array_field",
       "type": {
         "type": "array",
-        "items": "string"
+        "items": "string",
+        "arg.properties":
+        {
+          "options": [
+            [
+              "Hello",
+              "world"
+            ],
+            [
+              "Goodbye",
+              "world"
+            ],
+            [
+              "We",
+              "meet",
+              "again",
+              "world"
+            ]
+          ]
+        }
       }
     },
     {
@@ -20,7 +39,14 @@
           "GREETINGS",
           "SALUTATIONS",
           "GOODBYE"
-        ]
+        ],
+        "arg.properties":
+        {
+          "options": [
+            "HELLO",
+            "SALUTATIONS"
+          ]
+        }
       }
     },
     {
@@ -28,14 +54,44 @@
       "type": {
         "type": "fixed",
         "name": "fixed_test",
-        "size": 2
+        "size": 2,
+        "arg.properties":
+        {
+          "options": [
+            "\u0034\u0032",
+            "\u0045\u0045"
+          ]
+        }
       }
     },
     {
       "name": "map_field",
       "type": {
         "type": "map",
-        "values": "int"
+        "values": "int",
+        "arg.properties":
+        {
+          "options": [
+            {
+              "zero": 0
+            },
+            {
+              "one": 1,
+              "two": 2
+            },
+            {
+              "three": 3,
+              "four": 4,
+              "five": 5
+            },
+            {
+              "six": 6,
+              "seven": 7,
+              "eight": 8,
+              "nine": 9
+            }
+          ]
+        }
       }
     },
     {
@@ -43,7 +99,24 @@
       "type": {
         "type": "map",
         "values": {
-          "type": "int"
+          "type": "int",
+          "arg.properties": {
+            "options": [
+              -1,
+              0,
+              1
+            ]
+          }
+        },
+        "arg.properties": {
+          "length": 10,
+          "keys": {
+            "options": [
+              "negative",
+              "zero",
+              "positive"
+            ]
+          }
         }
       }
     },
@@ -61,7 +134,19 @@
             "name": "day",
             "type": "int"
           }
-        ]
+        ],
+        "arg.properties": {
+          "options": [
+            {
+              "month": "January",
+              "day": 2
+            },
+            {
+              "month": "NANuary",
+              "day": 0
+            }
+          ]
+        }
       }
     },
     {
@@ -69,25 +154,60 @@
       "type": [
         "null",
         {
-          "type": "boolean"
+          "type": "boolean",
+          "arg.properties": {
+            "options": [
+              true
+            ]
+          }
         },
         {
-          "type": "int"
+          "type": "int",
+          "arg.properties": {
+            "options": [
+              42
+            ]
+          }
         },
         {
-          "type": "long"
+          "type": "long",
+          "arg.properties": {
+            "options": [
+              4242424242424242
+            ]
+          }
         },
         {
-          "type": "float"
+          "type": "float",
+          "arg.properties": {
+            "options": [
+              42.42
+            ]
+          }
         },
         {
-          "type": "double"
+          "type": "double",
+          "arg.properties": {
+            "options": [
+              42424242.42424242
+            ]
+          }
         },
         {
-          "type": "bytes"
+          "type": "bytes",
+          "arg.properties": {
+            "options": [
+              "NDI="
+            ]
+          }
         },
         {
-          "type": "string"
+          "type": "string",
+          "arg.properties": {
+            "options": [
+              "Forty-two"
+            ]
+          }
         }
       ]
     }
