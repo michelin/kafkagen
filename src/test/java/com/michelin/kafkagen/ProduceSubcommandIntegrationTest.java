@@ -90,6 +90,8 @@ public class ProduceSubcommandIntegrationTest extends AbstractIntegrationTest {
         produceSubcommand.commandSpec = commandSpec;
         produceSubcommand.topic = Optional.of("avroTopicWithoutKey");
         produceSubcommand.file = Optional.of(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToProduce.json").toURI()));
+        produceSubcommand.keySubjectVersion = Optional.empty();
+        produceSubcommand.valueSubjectVersion = Optional.empty();
 
         assertEquals(CommandLine.ExitCode.OK, produceSubcommand.call());
         assertEquals("Produced 8 records in avroTopicWithoutKey with StringSerializer (key) - KafkaAvroSerializer (value)", out.toString().trim());

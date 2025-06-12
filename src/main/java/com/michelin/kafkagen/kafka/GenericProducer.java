@@ -187,7 +187,7 @@ public class GenericProducer {
 
         // Schema registry configuration is present
         context.definition().registryUrl().ifPresent(registryUrl -> {
-            settings.put(AbstractKafkaSchemaSerDeConfig.USE_LATEST_VERSION, true);
+            settings.put(AbstractKafkaSchemaSerDeConfig.USE_LATEST_VERSION, false);
             settings.put(AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS, false);
             settings.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, registryUrl);
 

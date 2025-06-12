@@ -96,7 +96,7 @@ public class PlaySubcommand extends ValidCurrentContextHook {
                 // Same topic given in the scenario description file
                 if (!StringUtil.isNullOrEmpty(spec.getTopic())) {
                     Dataset dataset = datasetService.getDataset(new File(absolutePath + "/" + spec.getDatasetFile()),
-                        spec.getTopic(), currentContext);
+                        spec.getTopic(), Optional.ofNullable(spec.getKeySubjectVersion()), Optional.ofNullable(spec.getValueSubjectVersion()), currentContext);
 
                     genericProducer.produce(spec.getTopic(), dataset, spec.getMaxInterval(), currentContext);
                     commandSpec.commandLine().getOut().println(String.format("Produced %d records in %s with %s (key) "

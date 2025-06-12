@@ -108,8 +108,10 @@ public class DatasetService {
 
         // Because there is not a single topic to produce in, creates a dataset by record
         rawRecords.forEach(record -> {
-            ParsedSchema keySchema = schemaService.getLatestSchema(record.getTopic() + "-key", context);
-            ParsedSchema valueSchema = schemaService.getLatestSchema(record.getTopic() + "-value", context);
+            ParsedSchema keySchema = schemaService.getSchema(
+                record.getTopic() + "-key", Optional.ofNullable(record.getKeySubjectVersion()), context);
+            ParsedSchema valueSchema = schemaService.getSchema(
+                record.getTopic() + "-value", Optional.ofNullable(record.getValueSubjectVersion()), context);
 
             // If we have at least one schema, proceed with AVRO/JSON/PROTOBUF
             if (valueSchema != null || keySchema != null) {
@@ -140,14 +142,17 @@ public class DatasetService {
      *
      * @param datasetFile - a dataset file
      * @param topic       - the topic to use for all the records
+     * @param keySubjectVersion - the version of the key subject to use for the schemas
+     * @param valueSubjectVersion - the version of the value subject to use for the schemas
      * @param context     - the user's context
      * @return a list of datasets to produce
      */
-    public Dataset getDataset(File datasetFile, String topic, KafkagenConfig.Context context) {
+    public Dataset getDataset(File datasetFile, String topic, Optional<Integer> keySubjectVersion,
+                              Optional<Integer> valueSubjectVersion, KafkagenConfig.Context context) {
         Dataset dataset = null;
 
-        ParsedSchema keySchema = schemaService.getLatestSchema(topic + "-key", context);
-        ParsedSchema valueSchema = schemaService.getLatestSchema(topic + "-value", context);
+        ParsedSchema keySchema = schemaService.getSchema(topic + "-key", keySubjectVersion, context);
+        ParsedSchema valueSchema = schemaService.getSchema(topic + "-value", valueSubjectVersion, context);
 
         // If we have at least one schema, proceed with AVRO/JSON/PROTOBUF
         if (valueSchema != null || keySchema != null) {
@@ -218,14 +223,12 @@ public class DatasetService {
 
         ParsedSchema keySchema = null;
         try {
-            // Get key/value schema from registry to Avro serialization
-            keySchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-key",
-                context.definition().registryUsername(), context.definition().registryPassword());
+            // Get key/value schema from registry to Avro serializations
+            keySchema = schemaService.getLatestSchema(topic + "-key", context);
         } catch (Exception e) {
             log.trace("No key schema found for subject <{}>, continuing with String serialization", topic + "-key");
         }
-        var valueSchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-value",
-            context.definition().registryUsername(), context.definition().registryPassword());
+        var valueSchema = schemaService.getLatestSchema(topic + "-value", context);
 
         return getAvroDataset(topic, (AvroSchema) keySchema, (AvroSchema) valueSchema, enrichedRecords);
     }

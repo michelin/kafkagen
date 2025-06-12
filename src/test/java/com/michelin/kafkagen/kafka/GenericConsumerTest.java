@@ -78,14 +78,14 @@ public class GenericConsumerTest extends AbstractIntegrationTest {
 
         // No registry in the context to produce a poison pill (StringSerializer/StringSerializer)
         Mockito.when(kafkaContext.registryUrl()).thenReturn(Optional.empty());
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", Optional.empty(), Optional.empty(), context);
         genericProducer.produce("avroTopicWithKey", dataset, 1, context);
 
         // Add the registry to the context
         Mockito.when(kafkaContext.registryUrl()).thenReturn(Optional.of(String.format("http://%s:%d", registryHost, Integer.parseInt(registryPort))));
 
         // Produce 2 records with KafkaAvroSerializer/KafkaAvroSerializer
-        dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", context);
+        dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.json").toURI()), "avroTopicWithKey", Optional.empty(), Optional.empty(), context);
         genericProducer.produce("avroTopicWithKey", dataset, 1, context);
 
         // Init a consumer with KafkaAvroSerializer/KafkaAvroSerializer
