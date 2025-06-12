@@ -4,6 +4,6 @@ metadata:
   description: random generation
 spec:
   topic: options
-  avroFile: ../avro/random/options.json
+  avroFile: ../avro/random/options.avsc
   iterations: 10
 
