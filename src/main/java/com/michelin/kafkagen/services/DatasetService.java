@@ -732,13 +732,7 @@ public class DatasetService {
         switch (logicalType.getName()) {
             case "decimal" -> {
                 BigDecimal decimal = new BigDecimal(stringValue);
-                int scale = ((LogicalTypes.Decimal) logicalType).getScale();
-
-                // Set the scale to match the schema requirement
-                decimal = decimal.setScale(scale, RoundingMode.HALF_EVEN);
-
-                // Convert to byte array representation of the unscaled value
-                // This is the correct format for decimal logical types
+                decimal = decimal.setScale(((LogicalTypes.Decimal) logicalType).getScale(), RoundingMode.HALF_EVEN);
                 value = new Conversions.DecimalConversion().toBytes(decimal, null, logicalType).array();
             }
             case "date" -> value = (int) LocalDate.parse(stringValue).toEpochDay();
