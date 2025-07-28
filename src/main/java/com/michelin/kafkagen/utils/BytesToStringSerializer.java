@@ -42,7 +42,7 @@ public class BytesToStringSerializer extends StdSerializer<byte[]> {
 
     @Override
     public void serialize(byte[] value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        String readableString = new String(value, StandardCharsets.UTF_8);
+        String readableString = new String(value, StandardCharsets.ISO_8859_1);
         gen.writeString(readableString);
     }
 }
