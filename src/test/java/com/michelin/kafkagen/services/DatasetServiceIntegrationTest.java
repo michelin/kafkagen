@@ -32,6 +32,11 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import org.apache.avro.Conversions;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.PrimitivesArrays;
@@ -74,9 +79,9 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void getDatasetForFileWithAvroSchema() throws Exception {
         String keyStringSchema =
-                new String(Files.readAllBytes(Paths.get("src/test/resources/avro/schemas/avroKeySchema.avsc")));
+            new String(Files.readAllBytes(Paths.get("src/test/resources/avro/schemas/avroKeySchema.avsc")));
         String valueStringSchema =
-                new String(Files.readAllBytes(Paths.get("src/test/resources/avro/schemas/avroValueSchema.avsc")));
+            new String(Files.readAllBytes(Paths.get("src/test/resources/avro/schemas/avroValueSchema.avsc")));
 
         createSubjects("avroTopicWithKey-key", new AvroSchema(new Schema.Parser().parse(keyStringSchema)));
         createSubjects("avroTopicWithKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
@@ -95,6 +100,28 @@ public class DatasetServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals("value2", ((GenericData.Record) dataset.getRecords().get(1).getValue()).get("fieldString").toString());
     }
 
+    @Test
+    public void getDatasetForFileWithAvroSchemaAndBytesFields() throws Exception {
+        String valueStringSchema =
+            new String(Files.readAllBytes(Paths.get("src/test/resources/avro/schemas/avroValueWithBytesFieldsSchema.avsc")));
+
+        createSubjects("avroValueWithBytesFieldsSchema-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
+
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForBytes.json").toURI()), "avroValueWithBytesFieldsSchema", Optional.empty(), Optional.empty(), context);
+
+
+        var expectedFieldBytes = "Hello World".getBytes(StandardCharsets.ISO_8859_1);
+        var expectedFieldBytesLogicalType = new Conversions.DecimalConversion().
+            toBytes(new BigDecimal("5.0000"), null, LogicalTypes.decimal(17, 4)).array();
+
+        assertNotNull(dataset);
+        assertEquals(1, dataset.getRecords().size());
+        assertEquals(GenericData.Record.class, dataset.getRecords().getFirst().getValue().getClass());
+        assertArrayEquals(expectedFieldBytes,
+            ((ByteBuffer) ((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldBytes")).array());
+        assertArrayEquals(expectedFieldBytesLogicalType,
+            ((ByteBuffer) ((GenericData.Record) dataset.getRecords().getFirst().getValue()).get("fieldBytesLogicalType")).array());
+    }
 
     @Test
     public void getDatasetForFileWithAvroSchemaAndPrettyDateAndTime() throws Exception {

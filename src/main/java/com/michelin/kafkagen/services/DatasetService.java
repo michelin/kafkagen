@@ -45,6 +45,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -63,7 +65,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.Conversions;
 import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
@@ -670,7 +674,7 @@ public class DatasetService {
                                     if (fieldSchema.getLogicalType() != null
                                         && record.get(f.name()) instanceof String) {
                                         record.put(f.name(), Map.of(fieldSchema.getName(),
-                                            convertToDateTime((String) record.get(f.name()),
+                                            convertToLogicalType((String) record.get(f.name()),
                                                 fieldSchema.getLogicalType())));
                                     } else {
                                         record.put(f.name(), Map.of(fieldSchema.getName(), record.get(f.name())));
@@ -692,18 +696,28 @@ public class DatasetService {
                         && s.getLogicalType() != null) {
                         record.put(f.name(), ((List) record.get(f.name())).stream().map(item -> {
                             if (item instanceof String) {
-                                return convertToDateTime((String) item, s.getLogicalType());
+                                return convertToLogicalType((String) item, s.getLogicalType());
                             }
                             return item;
                         }).toList());
                     }
                 }
                 case RECORD -> enrich((Map<String, Object>) record.get(f.name()), f.schema());
-                case BYTES, FIXED -> record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
+                case BYTES -> {
+                    if (schema.getField(f.name()).schema().getLogicalType() != null
+                        && record.get(f.name()) instanceof String) {
+                        record.put(f.name(),
+                            convertToLogicalType((String) record.get(f.name()), f.schema().getLogicalType()));
+                    } else if (record.get(f.name()) instanceof String) {
+                        // If the field is a string, we assume it's a Base64-encoded string
+                        record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
+                    }
+                }
+                case FIXED -> record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
                 case INT, LONG -> {
                     if (f.schema().getLogicalType() != null && record.get(f.name()) instanceof String) {
                         record.put(f.name(),
-                            convertToDateTime((String) record.get(f.name()), f.schema().getLogicalType()));
+                            convertToLogicalType((String) record.get(f.name()), f.schema().getLogicalType()));
                     }
                 }
                 default -> {
@@ -712,10 +726,21 @@ public class DatasetService {
         });
     }
 
-    public Object convertToDateTime(String stringValue, LogicalType logicalType) {
+    public Object convertToLogicalType(String stringValue, LogicalType logicalType) {
         Object value;
 
         switch (logicalType.getName()) {
+            case "decimal" -> {
+                BigDecimal decimal = new BigDecimal(stringValue);
+                int scale = ((LogicalTypes.Decimal) logicalType).getScale();
+
+                // Set the scale to match the schema requirement
+                decimal = decimal.setScale(scale, RoundingMode.HALF_EVEN);
+
+                // Convert to byte array representation of the unscaled value
+                // This is the correct format for decimal logical types
+                value = new Conversions.DecimalConversion().toBytes(decimal, null, logicalType).array();
+            }
             case "date" -> value = (int) LocalDate.parse(stringValue).toEpochDay();
             case "time-millis" -> value = (int) (LocalTime.parse(stringValue).toNanoOfDay() / 1000000);
             case "time-micros" -> value = LocalTime.parse(stringValue).toNanoOfDay() / 1000;

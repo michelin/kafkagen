@@ -73,7 +73,7 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void getFirstSchemaVersion() throws IOException {
+    public void getFirstSchemaVersion() {
         createSubjects("getFirstSchemaVersion-value", schema);
         createSubjects("getFirstSchemaVersion-value", schemaV2);
 
@@ -83,7 +83,7 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void getSecondSchemaVersion() throws IOException {
+    public void getSecondSchemaVersion() {
         createSubjects("getSecondSchemaVersion-value", schema);
         createSubjects("getSecondSchemaVersion-value", schemaV2);
 
@@ -92,9 +92,8 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(schemaV2, actualSchema);
     }
 
-
     @Test
-    public void getLatestSchema() throws IOException {
+    public void getLatestSchema() {
         createSubjects("getLatestSchema-value", schema);
         createSubjects("getLatestSchema-value", schemaV2);
 
@@ -104,7 +103,7 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void schemaVersionNotFound() throws IOException {
+    public void schemaVersionNotFound() {
         createSubjects("schemaVersionNotFound-value", schema);
         createSubjects("schemaVersionNotFound-value", schemaV2);
 

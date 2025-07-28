@@ -59,9 +59,9 @@
       }
     },
     {
-        "name": "newField",
-        "type": ["null", "string"],
-        "default": null
+      "name": "newField",
+      "type": ["null", "string"],
+      "default": null
     }
   ]
 }

@@ -31,6 +31,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class DatasetServiceTest {
@@ -68,6 +69,7 @@ public class DatasetServiceTest {
                                 "fieldRecordInt", 42)),
                 records.get(1).getValue());
     }
+
     @Test
     public void getRawRecordsYAML() throws Exception {
         List<Record> records = datasetService.getRawRecord(new File(getClass().getClassLoader().getResource("avro/datasets/dataset.yaml").toURI()));
@@ -152,6 +154,17 @@ public class DatasetServiceTest {
                 compactedRecords.stream().filter(r ->
                         Objects.equals(r.getKey(), Map.of("keyFieldString", "key3", "keyFieldInt", 42)))
                         .toList().getFirst().getValue());
+    }
+
+
+    @Test
+    public void getRawRecordsJsonForBytesFields() throws Exception {
+        List<Record> records = datasetService.getRawRecord(new File(getClass().getClassLoader().getResource("avro/datasets/datasetForBytes.json").toURI()));
+        assertEquals(1, records.size());
+        assertEquals(Map.of("fieldBytes", "SGVsbG8gV29ybGQ=",
+                "fieldBytesLogicalType", "5.0000"),
+            records.getFirst().getValue());
+
     }
 
     @Test
