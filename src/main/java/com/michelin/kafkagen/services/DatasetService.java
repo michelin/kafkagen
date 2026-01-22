@@ -45,6 +45,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -63,7 +65,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.Conversions;
 import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
@@ -108,8 +112,10 @@ public class DatasetService {
 
         // Because there is not a single topic to produce in, creates a dataset by record
         rawRecords.forEach(record -> {
-            ParsedSchema keySchema = schemaService.getLatestSchema(record.getTopic() + "-key", context);
-            ParsedSchema valueSchema = schemaService.getLatestSchema(record.getTopic() + "-value", context);
+            ParsedSchema keySchema = schemaService.getSchema(
+                record.getTopic() + "-key", Optional.ofNullable(record.getKeySubjectVersion()), context);
+            ParsedSchema valueSchema = schemaService.getSchema(
+                record.getTopic() + "-value", Optional.ofNullable(record.getValueSubjectVersion()), context);
 
             // If we have at least one schema, proceed with AVRO/JSON/PROTOBUF
             if (valueSchema != null || keySchema != null) {
@@ -140,14 +146,17 @@ public class DatasetService {
      *
      * @param datasetFile - a dataset file
      * @param topic       - the topic to use for all the records
+     * @param keySubjectVersion - the version of the key subject to use for the schemas
+     * @param valueSubjectVersion - the version of the value subject to use for the schemas
      * @param context     - the user's context
      * @return a list of datasets to produce
      */
-    public Dataset getDataset(File datasetFile, String topic, KafkagenConfig.Context context) {
+    public Dataset getDataset(File datasetFile, String topic, Optional<Integer> keySubjectVersion,
+                              Optional<Integer> valueSubjectVersion, KafkagenConfig.Context context) {
         Dataset dataset = null;
 
-        ParsedSchema keySchema = schemaService.getLatestSchema(topic + "-key", context);
-        ParsedSchema valueSchema = schemaService.getLatestSchema(topic + "-value", context);
+        ParsedSchema keySchema = schemaService.getSchema(topic + "-key", keySubjectVersion, context);
+        ParsedSchema valueSchema = schemaService.getSchema(topic + "-value", valueSubjectVersion, context);
 
         // If we have at least one schema, proceed with AVRO/JSON/PROTOBUF
         if (valueSchema != null || keySchema != null) {
@@ -218,14 +227,12 @@ public class DatasetService {
 
         ParsedSchema keySchema = null;
         try {
-            // Get key/value schema from registry to Avro serialization
-            keySchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-key",
-                context.definition().registryUsername(), context.definition().registryPassword());
+            // Get key/value schema from registry to Avro serializations
+            keySchema = schemaService.getLatestSchema(topic + "-key", context);
         } catch (Exception e) {
             log.trace("No key schema found for subject <{}>, continuing with String serialization", topic + "-key");
         }
-        var valueSchema = schemaService.getLatestSchema(context.definition().registryUrl().get(), topic + "-value",
-            context.definition().registryUsername(), context.definition().registryPassword());
+        var valueSchema = schemaService.getLatestSchema(topic + "-value", context);
 
         return getAvroDataset(topic, (AvroSchema) keySchema, (AvroSchema) valueSchema, enrichedRecords);
     }
@@ -667,7 +674,7 @@ public class DatasetService {
                                     if (fieldSchema.getLogicalType() != null
                                         && record.get(f.name()) instanceof String) {
                                         record.put(f.name(), Map.of(fieldSchema.getName(),
-                                            convertToDateTime((String) record.get(f.name()),
+                                            convertToLogicalType((String) record.get(f.name()),
                                                 fieldSchema.getLogicalType())));
                                     } else {
                                         record.put(f.name(), Map.of(fieldSchema.getName(), record.get(f.name())));
@@ -689,18 +696,28 @@ public class DatasetService {
                         && s.getLogicalType() != null) {
                         record.put(f.name(), ((List) record.get(f.name())).stream().map(item -> {
                             if (item instanceof String) {
-                                return convertToDateTime((String) item, s.getLogicalType());
+                                return convertToLogicalType((String) item, s.getLogicalType());
                             }
                             return item;
                         }).toList());
                     }
                 }
                 case RECORD -> enrich((Map<String, Object>) record.get(f.name()), f.schema());
-                case BYTES, FIXED -> record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
+                case BYTES -> {
+                    if (schema.getField(f.name()).schema().getLogicalType() != null
+                        && record.get(f.name()) instanceof String) {
+                        record.put(f.name(),
+                            convertToLogicalType((String) record.get(f.name()), f.schema().getLogicalType()));
+                    } else if (record.get(f.name()) instanceof String) {
+                        // If the field is a string, we assume it's a Base64-encoded string
+                        record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
+                    }
+                }
+                case FIXED -> record.put(f.name(), Base64.getDecoder().decode((String) record.get(f.name())));
                 case INT, LONG -> {
                     if (f.schema().getLogicalType() != null && record.get(f.name()) instanceof String) {
                         record.put(f.name(),
-                            convertToDateTime((String) record.get(f.name()), f.schema().getLogicalType()));
+                            convertToLogicalType((String) record.get(f.name()), f.schema().getLogicalType()));
                     }
                 }
                 default -> {
@@ -709,10 +726,15 @@ public class DatasetService {
         });
     }
 
-    public Object convertToDateTime(String stringValue, LogicalType logicalType) {
+    public Object convertToLogicalType(String stringValue, LogicalType logicalType) {
         Object value;
 
         switch (logicalType.getName()) {
+            case "decimal" -> {
+                BigDecimal decimal = new BigDecimal(stringValue);
+                decimal = decimal.setScale(((LogicalTypes.Decimal) logicalType).getScale(), RoundingMode.HALF_EVEN);
+                value = new Conversions.DecimalConversion().toBytes(decimal, null, logicalType).array();
+            }
             case "date" -> value = (int) LocalDate.parse(stringValue).toEpochDay();
             case "time-millis" -> value = (int) (LocalTime.parse(stringValue).toNanoOfDay() / 1000000);
             case "time-micros" -> value = LocalTime.parse(stringValue).toNanoOfDay() / 1000;

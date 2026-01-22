@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.michelin.kafka</groupId>
   <artifactId>kafkagen</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.2.1-SNAPSHOT</version>
   <properties>
-    <compiler-plugin.version>3.13.0</compiler-plugin.version>
+    <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -16,9 +16,9 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.5.3</surefire-plugin.version>
     <confluent.version>8.1.1</confluent.version>
-    <testcontainers.version>1.20.4</testcontainers.version>
-    <sonar-maven-plugin.version>5.1.0.4751</sonar-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
+    <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
   </properties>
 
@@ -87,12 +87,12 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.30</version>
+      <version>1.18.42</version>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>2.0</version>
+      <version>2.5</version>
     </dependency>
     <dependency>
       <groupId>io.confluent</groupId>
@@ -172,7 +172,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.21.1</version>
+              <version>11.0.1</version>
             </dependency>
           </dependencies>
         </plugin>

@@ -43,6 +43,8 @@ public class Scenario {
     @RegisterForReflection
     public static class ScenarioSpec {
         private String topic;
+        private Integer keySubjectVersion;
+        private Integer valueSubjectVersion;
         private String datasetFile;
         private String templateFile;
         private String avroFile;

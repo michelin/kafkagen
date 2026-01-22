@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.data.TimeConversions;
 import org.apache.avro.generic.GenericData;
@@ -270,7 +271,13 @@ public class AvroUtils {
                     result = 42;
                 }
             }
-            case BYTES -> result = "Bytes_value".getBytes();
+            case BYTES -> {
+                if (logicalType instanceof LogicalTypes.Decimal) {
+                    result = "5.0000";
+                } else {
+                    result = "Bytes_value".getBytes();
+                }
+            }
             case NULL -> result = null;
 
             default -> throw new RuntimeException("Type not supported: " + type);

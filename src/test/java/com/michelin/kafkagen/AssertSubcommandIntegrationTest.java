@@ -87,7 +87,7 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
         createSubjects("avroTopicWithoutKey-value", new AvroSchema(new Schema.Parser().parse(valueStringSchema)));
         getAdminClient().createTopics(List.of(new NewTopic("avroTopicWithoutKey", 3, (short) 1)));
-        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToProduce.json").toURI()), "avroTopicWithoutKey", context);
+        var dataset = datasetService.getDataset(new File(getClass().getClassLoader().getResource("avro/datasets/datasetToProduce.json").toURI()), "avroTopicWithoutKey", Optional.empty(), Optional.empty(), context);
 
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
 

@@ -169,7 +169,8 @@ The topic name can be passed:
 - In the command line if records have to be published in a single topic (see usage below)
 - In the dataset file if records have to be published in different topic (see `topic` field in the dataset definition)
 
-You can either send avro or plain-text messages by using the `-p` (`--plain`) option. By default, if no registry in specified in the configuration, messages will be "String serialized"
+By default, if no registry in specified in the configuration, messages will be "String serialized".
+It is possible to specify the version of the subject to use for the key and value serialization (default is latest). This is useful when you want to produce records with a specific schema version.
 ```
 Usage: kafkagen produce [-hvV] [-f=<file>] [<topic>]
 
@@ -183,8 +184,12 @@ Parameters:
 Options:
   -f, --file=<file>   YAML/JSON File containing the dataset to insert
   -h, --help          Show this help message and exit.
+      --key-version=<keySubjectVersion>
+                      Version of the subject to use for the key
   -v, --verbose       Show more information about the execution
   -V, --version       Print version information and exit.
+      --value-version=<valueSubjectVersion>
+                      Version of the subject to use for the value
 ```
 
 Example(s):
@@ -393,19 +398,21 @@ spec:
 Datasets can be defined in JSON or YAML files. A dataset file must contain an array of records.
 A dataset record can:
 
-| Field     | Description                                                                           | Mandatory |
-|-----------|---------------------------------------------------------------------------------------|-----------|
-| headers   | Record headers                                                                        | No        |
-| key       | Record key                                                                            | No        |
-| value     | Record value                                                                          | Yes       |
-| topic     | The targeted topic (if the dataset contains record to be publish in different topics) | No        |
-| timestamp | The record timestamp (ms). Default is the current timestamp                           | No        |
+| Field               | Description                                                                           | Mandatory |
+|---------------------|---------------------------------------------------------------------------------------|-----------|
+| headers             | Record headers                                                                        | No        |
+| keySubjectVersion   | Version of the subject to use for the key                                             | No        |
+| key                 | Record key                                                                            | No        |
+| valueSubjectVersion | Version of the subject to use for the value                                           | No        |
+| value               | Record value                                                                          | Yes       |
+| topic               | The targeted topic (if the dataset contains record to be publish in different topics) | No        |
+| timestamp           | The record timestamp (ms). Default is the current timestamp                           | No        |
 
 
 To ease the datasets writing, you can use the ```kafkagen sample``` command to get a sample for the topic based on the topic schema.
 
 Examples:
-- JSON record with all the possible fields (headers, record key, value, topic and timestamp)
+- JSON record with all the possible fields (headers, record key, value, topic, timestamp, keySubjectVersion and valueSubjectVersion)
 ```json
 [
   {
@@ -414,10 +421,12 @@ Examples:
       "header1": "valueHeader1"
     },
     "timestamp": 709491600000,
+    "keySubjectVersion": 2,
     "key": {
       "keyField1": "keyValue1",
       "keyField2": "keyValue2"
     },
+    "valueSubjectVersion": 1,
     "value": {
       "field1": "value1",
       "field2": "value2",

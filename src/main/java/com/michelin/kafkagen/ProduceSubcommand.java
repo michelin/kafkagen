@@ -48,6 +48,12 @@ public class ProduceSubcommand extends ValidCurrentContextHook {
     @CommandLine.Option(names = {"-f", "--file"}, description = "YAML/JSON File containing the dataset to insert")
     public Optional<File> file;
 
+    @CommandLine.Option(names = {"--key-version"}, description = "Version of the subject to use for the key")
+    public Optional<Integer> keySubjectVersion;
+
+    @CommandLine.Option(names = {"--value-version"}, description = "Version of the subject to use for the value")
+    public Optional<Integer> valueSubjectVersion;
+
     public GenericProducer genericProducer;
     public DatasetService datasetService;
 
@@ -80,7 +86,8 @@ public class ProduceSubcommand extends ValidCurrentContextHook {
                 );
             } else {
                 // Otherwise, 1 topic for all the record
-                Dataset dataset = datasetService.getDataset(file.get(), topic.get(), currentContext.get());
+                Dataset dataset = datasetService.getDataset(file.get(), topic.get(),
+                    keySubjectVersion, valueSubjectVersion, currentContext.get());
 
                 genericProducer.produce(topic.get(), dataset, 1, currentContext.get());
                 commandSpec.commandLine().getOut()
