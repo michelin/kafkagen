@@ -119,6 +119,9 @@ public class GenericProducer {
                 }
             }
         });
+
+        // Flush to ensure all records are sent before returning
+        producer.flush();
     }
 
     public void producerRandom(String topicName, String avroFile, Long iterations, Integer maxInterval,

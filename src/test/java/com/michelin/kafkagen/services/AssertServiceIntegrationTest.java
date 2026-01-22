@@ -85,8 +85,6 @@ public class AssertServiceIntegrationTest extends AbstractIntegrationTest {
 
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
 
-        Thread.sleep(1000);
-
         var rawDataset = datasetService.getRawRecord(new File(getClass().getClassLoader().getResource("avro/expected/assertDataset.json").toURI()));
         boolean result = assertService.assertThatTopicContains("avroTopicWithoutKey", rawDataset, new HashMap<>(), context, false, Optional.empty());
         assertTrue(result);
@@ -114,8 +112,6 @@ public class AssertServiceIntegrationTest extends AbstractIntegrationTest {
         Thread.sleep(1000);
 
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
-
-        Thread.sleep(1000);
 
         var rawDataset = datasetService.getRawRecord(new File(getClass().getClassLoader().getResource("avro/expected/assertDatasetWithoutKey.json").toURI()));
         var mostRecentAssertResult = rawDataset.stream()

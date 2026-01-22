@@ -99,8 +99,6 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
         // Partition 2: key1, key2
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
 
-        Thread.sleep(1000);
-
         var datasetSubcommand = new DatasetSubcommand(configService, schemaService, datasetService);
         initCommandLine(datasetSubcommand);
         datasetSubcommand.commandSpec = commandSpec;
