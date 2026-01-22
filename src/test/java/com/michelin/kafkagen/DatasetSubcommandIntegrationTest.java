@@ -139,8 +139,8 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     private void initCommandLine(DatasetSubcommand datasetSubcommand) {
         var commandLine = new CommandLine(datasetSubcommand);
-        commandLine.setOut(new PrintWriter(out));
-        commandLine.setErr(new PrintWriter(out));
+        commandLine.setOut(new PrintWriter(out, true));
+        commandLine.setErr(new PrintWriter(out, true));
         Mockito.when(commandSpec.commandLine()).thenReturn(commandLine);
     }
 }
