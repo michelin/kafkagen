@@ -20,6 +20,7 @@
     <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
+    <bouncycastle.jdk18on.version>1.82</bouncycastle.jdk18on.version>
   </properties>
 
   <repositories>
@@ -153,12 +154,12 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.78</version>
+      <version>${bouncycastle.jdk18on.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bctls-jdk18on</artifactId>
-      <version>1.78</version>
+      <version>${bouncycastle.jdk18on.version}</version>
     </dependency>
   </dependencies>
   <build>
