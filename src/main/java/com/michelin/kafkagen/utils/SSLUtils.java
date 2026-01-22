@@ -19,9 +19,11 @@
 
 package com.michelin.kafkagen.utils;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.RestService;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.lang.reflect.Field;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * Utility class to turn off SSL for Kafka clients and schema registry.
  */
 @Slf4j
+@RegisterForReflection(targets = {CachedSchemaRegistryClient.class})
 public class SSLUtils {
 
     /**
