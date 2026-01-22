@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
  * Utility class to turn off SSL for Kafka clients and schema registry.
  */
 @Slf4j
-@RegisterForReflection(targets = {CachedSchemaRegistryClient.class})
 public class SSLUtils {
 
     /**

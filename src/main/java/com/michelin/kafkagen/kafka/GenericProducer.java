@@ -53,7 +53,6 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 @Slf4j
-@RegisterForReflection(targets = {KafkaProducer.class, SslFactory.class, InsecureSslEngineFactory.class})
 @ApplicationScoped
 public class GenericProducer {
 

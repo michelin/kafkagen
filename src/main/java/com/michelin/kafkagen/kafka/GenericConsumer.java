@@ -58,7 +58,6 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 @Slf4j
-@RegisterForReflection(targets = {KafkaConsumer.class, SslFactory.class, InsecureSslEngineFactory.class})
 @ApplicationScoped
 public class GenericConsumer {
 
