@@ -99,8 +99,6 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
         // Partition 2: key1, key2
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
 
-        Thread.sleep(1000);
-
         var datasetSubcommand = new DatasetSubcommand(configService, schemaService, datasetService);
         initCommandLine(datasetSubcommand);
         datasetSubcommand.commandSpec = commandSpec;
@@ -141,8 +139,8 @@ public class DatasetSubcommandIntegrationTest extends AbstractIntegrationTest {
 
     private void initCommandLine(DatasetSubcommand datasetSubcommand) {
         var commandLine = new CommandLine(datasetSubcommand);
-        commandLine.setOut(new PrintWriter(out));
-        commandLine.setErr(new PrintWriter(out));
+        commandLine.setOut(new PrintWriter(out, true));
+        commandLine.setErr(new PrintWriter(out, true));
         Mockito.when(commandSpec.commandLine()).thenReturn(commandLine);
     }
 }

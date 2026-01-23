@@ -91,8 +91,6 @@ public class AssertSubcommandIntegrationTest extends AbstractIntegrationTest {
 
         genericProducer.produce("avroTopicWithoutKey", dataset, 1, context);
 
-        Thread.sleep(1000);
-
         var assertSubcommand = new AssertSubcommand(configService, datasetService, assertService);
         initCommandLine(assertSubcommand);
         assertSubcommand.commandSpec = commandSpec;
