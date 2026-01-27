@@ -42,7 +42,7 @@ jobs:
         run: ./mvnw package -Dquarkus.package.jar.type=uber-jar
 
       - name: Upload
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: kafkagen-jar
           path: ${{ github.workspace }}/target/*-runner.jar
@@ -95,7 +95,7 @@ jobs:
           echo current_version=$(echo $(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)) >> $GITHUB_OUTPUT
 
       - name: Upload
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: kafkagen-${{ matrix.platform }}
           path: ${{ github.workspace }}/target/**/*-runner
@@ -133,7 +133,7 @@ jobs:
         shell: cmd
 
       - name: Upload
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: kafkagen-windows
           path: ${{ github.workspace }}/target/*.exe
