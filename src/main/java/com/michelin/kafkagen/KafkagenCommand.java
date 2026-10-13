@@ -39,10 +39,12 @@ import picocli.CommandLine.Command;
         versionProvider = KafkagenCommand.ManifestVersionProvider.class)
 public class KafkagenCommand implements Callable<Integer> {
 
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec commandSpec;
+
     public Integer call() {
-        var cmd = new CommandLine(new KafkagenCommand());
-        cmd.usage(System.out);
-        return 0;
+        commandSpec.commandLine().usage(commandSpec.commandLine().getOut());
+        return CommandLine.ExitCode.OK;
     }
 
     static class ManifestVersionProvider implements CommandLine.IVersionProvider {
