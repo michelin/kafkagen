@@ -27,10 +27,8 @@ import com.michelin.kafkagen.services.SchemaService;
 import com.michelin.kafkagen.utils.InsecureSslEngineFactory;
 import com.michelin.kafkagen.utils.SSLUtils;
 import io.confluent.avro.random.generator.Generator;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -42,12 +40,9 @@ import java.util.Properties;
 import java.util.stream.LongStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.config.SaslConfigs;
-import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.security.ssl.SslFactory;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -174,53 +169,17 @@ public class GenericProducer {
         settings.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
         settings.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
 
-        // Boostrap servers configuration
-        settings.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, context.definition().bootstrapServers());
-        context.definition().saslJaasConfig().ifPresentOrElse(saslJaasConfig -> {
-            var securityProtocol = context.definition().securityProtocol();
-            var saslMechanism = context.definition().saslMechanism();
-            if (securityProtocol.isEmpty() || saslMechanism.isEmpty()) {
-                throw new RuntimeException("security-protocol and sasl-mechanism settings are mandatory");
-            }
-
-            settings.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, securityProtocol.get());
-            settings.put(SaslConfigs.SASL_MECHANISM, saslMechanism.get());
-            settings.put(SaslConfigs.SASL_JAAS_CONFIG, saslJaasConfig);
-        }, () -> settings.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT"));
-
-        // Schema registry configuration is present
-        context.definition().registryUrl().ifPresent(registryUrl -> {
-            settings.put(AbstractKafkaSchemaSerDeConfig.USE_LATEST_VERSION, false);
-            settings.put(AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS, false);
-            settings.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, registryUrl);
-
-            var registryUsername = context.definition().registryUsername();
-            var registryPassword = context.definition().registryPassword();
-
-            if (registryUsername.isPresent() && registryPassword.isPresent()) {
-                settings.put("basic.auth.credentials.source", "USER_INFO");
-                settings.put("basic.auth.user.info",
-                    String.format("%s:%s", registryUsername.get(), registryPassword.get()));
-            }
-        });
-
         context.definition().partitionerClass().ifPresent(partitionerClass -> {
             settings.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, partitionerClass);
         });
 
-        if (configService.kafkagenConfig.truststoreLocation().isPresent()) {
-            // Setup the custom truststore location if given to the producer and the schema registry client
-            settings.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-                configService.kafkagenConfig.truststoreLocation().get());
-            settings.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-                configService.kafkagenConfig.truststoreLocation().get());
+        if (context.definition().registryUrl().isPresent()) {
+            settings.put(AbstractKafkaSchemaSerDeConfig.USE_LATEST_VERSION, false);
+            settings.put(AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS, false);
         }
 
-        if (configService.kafkagenConfig.insecureSsl().isPresent()
-            && configService.kafkagenConfig.insecureSsl().get()) {
-            // Disable SSL for the Kafka cluster connection
-            settings.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, InsecureSslEngineFactory.class);
-        }
+        settings.putAll(KafkaClientPropertiesFactory.kafkaProperties(context, configService.kafkagenConfig));
+        settings.putAll(KafkaClientPropertiesFactory.registryProperties(context, configService.kafkagenConfig));
 
         final var kafkaProducer = new KafkaProducer<>(settings);
 

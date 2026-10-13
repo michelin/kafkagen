@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
 import org.mockito.Mockito;
 
@@ -49,6 +50,9 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    ConfigService configService;
 
     @InjectMock
     MockedContext context;
@@ -113,5 +117,24 @@ public class SchemaServiceIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void schemaNotFound() {
         assertNull(schemaService.getSchema("unknownSubject-value", Optional.empty(), context));
+    }
+
+    @Test
+    public void getSchemaUsesRegistryPropertiesOverrideOverRegistryUrl() {
+        createSubjects("getSchemaUsesRegistryPropertiesOverrideOverRegistryUrl-value", schema);
+
+        // registry-url points to an unreachable address; registry-properties overrides schema.registry.url
+        // to the real test registry. The client must honour the override, not the plain registry-url field.
+        Mockito.when(kafkaContext.registryUrl()).thenReturn(Optional.of("http://unreachable-host:1"));
+        Mockito.when(kafkaContext.registryProperties()).thenReturn(
+            Map.of("schema.registry.url", String.format("http://%s:%d", registryHost, Integer.parseInt(registryPort))));
+
+        // Use a fresh instance so the override is exercised instead of the already-cached client from other tests.
+        var isolatedSchemaService = new SchemaService(configService);
+
+        ParsedSchema actualSchema = isolatedSchemaService.getSchema(
+            "getSchemaUsesRegistryPropertiesOverrideOverRegistryUrl-value", Optional.empty(), context);
+
+        assertEquals(schema, actualSchema);
     }
 }

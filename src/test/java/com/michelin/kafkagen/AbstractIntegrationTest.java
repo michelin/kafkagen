@@ -157,6 +157,16 @@ public abstract class AbstractIntegrationTest {
             public Optional<String> partitionerClass() {
                 return Optional.of("partitionerClass");
             }
+
+            @Override
+            public Map<String, String> kafkaProperties() {
+                return Map.of();
+            }
+
+            @Override
+            public Map<String, String> registryProperties() {
+                return Map.of();
+            }
         }
     }
 }

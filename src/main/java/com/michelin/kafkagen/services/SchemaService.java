@@ -21,16 +21,17 @@ package com.michelin.kafkagen.services;
 
 import com.michelin.kafkagen.config.KafkagenConfig;
 import com.michelin.kafkagen.exceptions.SchemaNotFoundException;
+import com.michelin.kafkagen.kafka.KafkaClientPropertiesFactory;
 import com.michelin.kafkagen.utils.SSLUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.HashMap;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.config.SslConfigs;
 
 @Slf4j
 @Singleton
@@ -126,20 +126,10 @@ public class SchemaService {
      */
     private void initSchemaRegistryClient(KafkagenConfig.Context context) {
         if (context.definition().registryUrl().isPresent()) {
-            Map<String, String> props = new HashMap<>();
-            if (context.definition().registryUsername().isPresent() &&
-                context.definition().registryPassword().isPresent()) {
-                props.put("basic.auth.credentials.source", "USER_INFO");
-                props.put("basic.auth.user.info",
-                    String.format("%s:%s", context.definition().registryUsername().get(),
-                        context.definition().registryPassword().get()));
-            }
+            var props = KafkaClientPropertiesFactory.registryProperties(context, configService.kafkagenConfig);
+            var registryUrl = String.valueOf(props.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
 
-            // Setup the custom truststore location if given
-            props.put(SchemaRegistryClientConfig.CLIENT_NAMESPACE + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-                configService.kafkagenConfig.truststoreLocation().orElse(""));
-
-            schemaRegistryClient = new CachedSchemaRegistryClient(context.definition().registryUrl().get(), 20,
+            schemaRegistryClient = new CachedSchemaRegistryClient(registryUrl, 20,
                 List.of(new AvroSchemaProvider(), new JsonSchemaProvider(), new ProtobufSchemaProvider()), props);
 
             if (configService.kafkagenConfig.insecureSsl().isPresent()

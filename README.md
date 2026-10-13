@@ -66,8 +66,9 @@ kafkagen:
         sasl-mechanism: SCRAM-SHA-512
         sasl-jaas-config: org.apache.kafka.common.security.scram.ScramLoginModule required username="myUsername" password="myPassword";
         registry-url: http://schema-registry:9095
-        registry-username: myUsername
-        registry-password: myPassword
+        registry-properties:
+          basic.auth.credentials.source: USER_INFO
+          basic.auth.user.info: myUsername:myPassword
         group-id-prefix: myGroupPrefix.
     - name: env2
       context:
@@ -77,6 +78,22 @@ kafkagen:
         sasl-jaas-config: org.apache.kafka.common.security.plain.PlainLoginModule required username="myUsername" password="myPassword";
         registry-url: http://schema-registry:9095
         partitioner-class: com.michelin.kafkagen.kafka.Crc32Partitioner
+    - name: env3
+      context:
+        bootstrap-servers: broker1,broker2,broker3
+        security-protocol: SASL_SSL
+        sasl-mechanism: OAUTHBEARER
+        sasl-jaas-config: org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId="myClientId" clientSecret="myClientSecret" scope="kafka";
+        kafka-properties:
+          sasl.login.callback.handler.class: org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler
+          sasl.oauthbearer.token.endpoint.url: https://idp.example.com/oauth2/token
+        registry-url: https://schema-registry:9095
+        registry-properties:
+          bearer.auth.credentials.source: OAUTHBEARER
+          bearer.auth.issuer.endpoint.url: https://idp.example.com/oauth2/token
+          bearer.auth.client.id: myClientId
+          bearer.auth.client.secret: myClientSecret
+          bearer.auth.scope: schema-registry
   current-context: dev
 ```
 The application can be configured using the following properties:
@@ -84,14 +101,21 @@ The application can be configured using the following properties:
 - `bootstrap-servers`: The list of Kafka bootstrap servers.
 - `security-protocol`: The security protocol to use, if any.
 - `sasl-mechanism`: The SASL mechanism to use, if any.
-- `sasl-jaas-cnfig`: The JAAS configuration for SASL, if any.
+- `sasl-jaas-config`: The JAAS configuration for SASL, if any. When set, `security-protocol` and `sasl-mechanism` are mandatory.
+- `kafka-properties`: Additional [Kafka client properties](https://kafka.apache.org/documentation/#producerconfigs), if any (e.g. OAuth, mTLS keystore, timeouts). They override the settings above.
 - `registry-url`: The URL of the schema registry, if any.
-- `registry-username`: The username for the schema registry, if any.
-- `registry-password`: The password for the schema registry, if any.
+- `registry-properties`: Additional [Schema Registry client properties](https://docs.confluent.io/platform/current/schema-registry/sr-client-configs.html), if any (e.g. `basic.auth.*` or `bearer.auth.*` authentication).
+- `registry-username`: **Deprecated**, will be removed in a future release. The username for the schema registry, if any. Use `registry-properties` with `basic.auth.credentials.source: USER_INFO` and `basic.auth.user.info` instead.
+- `registry-password`: **Deprecated**, will be removed in a future release. The password for the schema registry, if any. Use `registry-properties` with `basic.auth.credentials.source: USER_INFO` and `basic.auth.user.info` instead.
 - `group-id-prefix`: The prefix for consumer group to use, if any.
 - `partitioner-class`: The fully qualified class name of the custom partitioner to use, if any. This is particularly useful for .NET clients, as they use the CRC32 algorithm by default. In this case, set `com.michelin.kafkagen.kafka.Crc32Partitioner`
 
-Please note that only `bootstrap-servers` is mandatory. All the other keys are optional
+Please note that only `bootstrap-servers` is mandatory. All the other keys are optional.
+
+`registry-username`/`registry-password` cannot be combined with a `bearer.auth.credentials.source` defined in `registry-properties`.
+
+Since Kafka 4.0, OAuth endpoints must be allowed through the `org.apache.kafka.sasl.oauthbearer.allowed.urls` JVM system property.
+Kafkagen automatically adds the `sasl.oauthbearer.token.endpoint.url`, `sasl.oauthbearer.jwks.endpoint.url` and `bearer.auth.issuer.endpoint.url` values of the current context to this list.
 
 ## Usage
 

@@ -23,6 +23,7 @@ import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @ConfigMapping(prefix = "kafkagen")
@@ -53,11 +54,33 @@ public interface KafkagenConfig {
 
             Optional<String> saslJaasConfig();
 
+            /**
+             * Additional Kafka client properties (e.g. OAuth settings). They override the named settings.
+             */
+            Map<String, String> kafkaProperties();
+
             Optional<String> registryUrl();
 
+            /**
+             * Use registry-properties with basic.auth.credentials.source and basic.auth.user.info instead.
+             *
+             * @deprecated will be removed in a future release
+             */
+            @Deprecated
             Optional<String> registryUsername();
 
+            /**
+             * Use registry-properties with basic.auth.credentials.source and basic.auth.user.info instead.
+             *
+             * @deprecated will be removed in a future release
+             */
+            @Deprecated
             Optional<String> registryPassword();
+
+            /**
+             * Additional Schema Registry client properties (e.g. basic or bearer authentication).
+             */
+            Map<String, String> registryProperties();
 
             Optional<String> partitionerClass();
         }
