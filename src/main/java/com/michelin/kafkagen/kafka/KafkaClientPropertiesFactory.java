@@ -38,9 +38,7 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.config.internals.BrokerSecurityConfigs;
 import org.apache.kafka.common.security.oauthbearer.ClientCredentialsJwtRetriever;
-import org.apache.kafka.common.security.oauthbearer.ClientJwtValidator;
 import org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever;
-import org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator;
 import org.apache.kafka.common.security.oauthbearer.FileJwtRetriever;
 import org.apache.kafka.common.security.oauthbearer.JwtBearerJwtRetriever;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
@@ -50,6 +48,11 @@ import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule;
  * Build the Kafka and Schema Registry client properties from a Kafkagen context.
  * Named context fields are applied first, then the free-form kafka-properties / registry-properties
  * maps are applied last so they can override anything.
+ *
+ * <p>Only the client-side OAuth2 classes (login module, callback handler, JWT retrievers) are registered
+ * for native reflection. The broker-side JWT validators ({@code DefaultJwtValidator}, {@code ClientJwtValidator},
+ * {@code BrokerJwtValidator}) are intentionally excluded: kafkagen only obtains tokens, it never validates them,
+ * and {@code BrokerJwtValidator} requires the optional jose4j dependency which isn't bundled.
  */
 @Slf4j
 @RegisterForReflection(targets = {
@@ -58,9 +61,7 @@ import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule;
     DefaultJwtRetriever.class,
     ClientCredentialsJwtRetriever.class,
     JwtBearerJwtRetriever.class,
-    FileJwtRetriever.class,
-    DefaultJwtValidator.class,
-    ClientJwtValidator.class
+    FileJwtRetriever.class
 })
 public final class KafkaClientPropertiesFactory {
     static final String BASIC_AUTH_CREDENTIALS_SOURCE = "basic.auth.credentials.source";
