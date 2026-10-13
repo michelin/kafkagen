@@ -161,6 +161,19 @@ class KafkaClientPropertiesFactoryTest {
     }
 
     @Test
+    void registryPropertiesOverrideSchemaRegistryUrl() {
+        var config = loadContext("""
+            bootstrap-servers: localhost:9092
+            registry-url: http://registry
+            registry-properties:
+              schema.registry.url: http://overridden-registry
+            """);
+        var props = KafkaClientPropertiesFactory.registryProperties(config.contexts().getFirst(), config);
+
+        assertEquals("http://overridden-registry", props.get("schema.registry.url"));
+    }
+
+    @Test
     void deprecatedRegistryCredentials() {
         var config = loadContext("""
             bootstrap-servers: localhost:9092

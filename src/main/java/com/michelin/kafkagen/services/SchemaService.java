@@ -31,6 +31,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.HashMap;
@@ -126,8 +127,9 @@ public class SchemaService {
     private void initSchemaRegistryClient(KafkagenConfig.Context context) {
         if (context.definition().registryUrl().isPresent()) {
             var props = KafkaClientPropertiesFactory.registryProperties(context, configService.kafkagenConfig);
+            var registryUrl = String.valueOf(props.get(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG));
 
-            schemaRegistryClient = new CachedSchemaRegistryClient(context.definition().registryUrl().get(), 20,
+            schemaRegistryClient = new CachedSchemaRegistryClient(registryUrl, 20,
                 List.of(new AvroSchemaProvider(), new JsonSchemaProvider(), new ProtobufSchemaProvider()), props);
 
             if (configService.kafkagenConfig.insecureSsl().isPresent()
