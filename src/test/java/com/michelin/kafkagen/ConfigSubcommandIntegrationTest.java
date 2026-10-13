@@ -36,6 +36,7 @@ import picocli.CommandLine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,9 +90,14 @@ public class ConfigSubcommandIntegrationTest extends AbstractIntegrationTest {
                   sasl-jaas-config: saslJaasConfig2
                   security-protocol: securityProtocol2
                   sasl-mechanism: saslMechanism2
+                  kafka-properties:
+                    sasl.login.callback.handler.class: loginCallbackHandler2
+                    sasl.oauthbearer.token.endpoint.url: tokenEndpointUrl2
                   registry-url: registryUrl2
                   registry-username: registryUsername2
                   registry-password: registryPassword2
+                  registry-properties:
+                    bearer.auth.credentials.source: OAUTHBEARER
                   partitioner-class: partitionerClass2
                 context1:
                   bootstrap-servers: bootstrapServers
@@ -184,6 +190,17 @@ public class ConfigSubcommandIntegrationTest extends AbstractIntegrationTest {
             @Override
             public Optional<String> partitionerClass() {
                 return Optional.of("partitionerClass2");
+            }
+
+            @Override
+            public Map<String, String> kafkaProperties() {
+                return Map.of("sasl.oauthbearer.token.endpoint.url", "tokenEndpointUrl2",
+                    "sasl.login.callback.handler.class", "loginCallbackHandler2");
+            }
+
+            @Override
+            public Map<String, String> registryProperties() {
+                return Map.of("bearer.auth.credentials.source", "OAUTHBEARER");
             }
         }
     }

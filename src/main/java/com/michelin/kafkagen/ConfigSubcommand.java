@@ -24,6 +24,7 @@ import com.michelin.kafkagen.services.ConfigService;
 import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import lombok.Getter;
 import org.yaml.snakeyaml.DumperOptions;
@@ -66,6 +67,7 @@ public class ConfigSubcommand implements Callable<Integer> {
      * @throws Exception Any exception during the run
      */
     @Override
+    @SuppressWarnings("deprecation")
     public Integer call() throws Exception {
         if (action.equals(ConfigAction.CURRENT_CONTEXT)) {
             commandSpec.commandLine().getOut().println(kafkagenConfig.currentContext());
@@ -80,7 +82,7 @@ public class ConfigSubcommand implements Callable<Integer> {
         if (action.equals(ConfigAction.GET_CONTEXTS)) {
             var contexts = new HashMap<String, Object>();
             kafkagenConfig.contexts().forEach(c -> {
-                var config = new LinkedHashMap<String, String>();
+                var config = new LinkedHashMap<String, Object>();
 
                 config.put("bootstrap-servers", c.definition().bootstrapServers());
                 if (c.definition().saslJaasConfig().isPresent()) {
@@ -92,6 +94,9 @@ public class ConfigSubcommand implements Callable<Integer> {
                 if (c.definition().saslMechanism().isPresent()) {
                     config.put("sasl-mechanism", c.definition().saslMechanism().get());
                 }
+                if (!c.definition().kafkaProperties().isEmpty()) {
+                    config.put("kafka-properties", new TreeMap<>(c.definition().kafkaProperties()));
+                }
 
                 if (c.definition().registryUrl().isPresent()) {
                     config.put("registry-url", c.definition().registryUrl().get());
@@ -99,6 +104,9 @@ public class ConfigSubcommand implements Callable<Integer> {
                 if (c.definition().registryUsername().isPresent() && c.definition().registryPassword().isPresent()) {
                     config.put("registry-username", c.definition().registryUsername().get());
                     config.put("registry-password", c.definition().registryPassword().get());
+                }
+                if (!c.definition().registryProperties().isEmpty()) {
+                    config.put("registry-properties", new TreeMap<>(c.definition().registryProperties()));
                 }
                 if (c.definition().partitionerClass().isPresent()) {
                     config.put("partitioner-class", c.definition().partitionerClass().get());
